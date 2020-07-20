@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.myapplication.R;
@@ -18,6 +19,8 @@ import com.example.myapplication.util.api.UtilsApi;
 
 import org.json.JSONObject;
 
+
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -31,6 +34,8 @@ public class ChangePassword extends AppCompatActivity {
     @BindView(R.id.input_newPassword) EditText newpassword;
     @BindView(R.id.input_confirmPassword) EditText confirmpassword;
     @BindView(R.id.btn_changePassword) Button changepassword;
+    @BindView(R.id.toolbar_back) TextView toolbar_back;
+    @BindView(R.id.toolbar_title) TextView toolbar_title;
 
     Context mContext;
     BaseApiService mApiService;
@@ -43,7 +48,7 @@ public class ChangePassword extends AppCompatActivity {
 
         ButterKnife.bind(this);
         mContext = this;
-        mApiService = UtilsApi.getAPIService();
+        mApiService = UtilsApi.getAPIService(mContext);
         mValidate = new Validate();
 
         changepassword.setOnClickListener(new View.OnClickListener() {
@@ -55,6 +60,19 @@ public class ChangePassword extends AppCompatActivity {
                 }
             }
         });
+        toolbar_title.setText("Change password");
+        toolbar_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
     }
 
     private void changePassword(){

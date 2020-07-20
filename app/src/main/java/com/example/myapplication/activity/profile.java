@@ -3,11 +3,14 @@ package com.example.myapplication.activity;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import com.example.myapplication.R;
 import com.example.myapplication.model.BaseUser;
+import com.example.myapplication.model.ListEvent.User;
+import com.example.myapplication.util.SharedPrefManager;
 import com.example.myapplication.util.api.BaseApiService;
 import com.example.myapplication.util.api.UtilsApi;
 import com.squareup.picasso.Picasso;
@@ -17,7 +20,13 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -37,23 +46,53 @@ public class profile extends AppCompatActivity {
     @BindView(R.id.txt_job) TextView job;
     @BindView(R.id.txt_description) TextView description;
     @BindView(R.id.profile_image) CircleImageView image;
+    @BindView(R.id.toolbar_back) TextView toolbar_back;
+    @BindView(R.id.toolbar_right) TextView toolbar_right;
+    @BindView(R.id.toolbar_title) TextView toolbar_title;
 
     String urlImage;
 
     Context mContext;
     BaseApiService mApiService;
+    SharedPrefManager sharedPrefManager;
 
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-        getSupportActionBar().setCustomView(R.layout.custom_action_bar);
 
         ButterKnife.bind(this);
         mContext = this;
-        mApiService = UtilsApi.getAPIService();
-        getProfile();
+        mApiService = UtilsApi.getAPIService(mContext);
+        sharedPrefManager = new SharedPrefManager(this);
+        getProfileFromSharedPreferences();
+        toolbar_title.setText("Profile");
+        toolbar_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+        toolbar_right.setVisibility(View.VISIBLE);
+        toolbar_right.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(mContext, EditProfile.class));
+            }
+        });
+    }
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
+    @Override
+    public void onResume()
+    {  // After a pause OR at startup
+        super.onResume();
+        getProfileFromSharedPreferences();
+        //Refresh your stuff here
     }
     public void edit_profile(View v)
     {
@@ -67,19 +106,26 @@ public class profile extends AppCompatActivity {
             public void onResponse(Call<BaseUser> call, Response<BaseUser> response) {
                 if (response.code()==200)
                 {
-                    urlImage = response.body().getResult().getAvatar();
-                    fullname.setText(response.body().getResult().getFullName());
-                    email.setText(response.body().getResult().getEmail());
-//                    birthday.setText(response.body().getResult().getBirthday().toString());
-//                    numberphone.setText(response.body().getResult().getPhone());
-//                    description.setText(response.body().getResult().getDescription());
-//                    gender.setText(response.body().getResult().getGender());
-//                    job.setText(response.body().getResult().getJob());
+                    User userInfo = response.body().getResult();
+                    urlImage = userInfo.getAvatar();
+                    fullname.setText(userInfo.getFullName());
+                    email.setText(userInfo.getEmail());
+                    if (userInfo.getBirthday()==null)
+                    {
+                        birthday.setText("");
+                    }
+                    else
+                    {
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                        Date birthDay = userInfo.getBirthday();
+                        birthday.setText(dateFormat.format(birthDay).toString());
+                    }
+                    numberphone.setText(userInfo.getPhone());
+                    description.setText(userInfo.getDiscription());
+                    gender.setText(userInfo.getGender());
+                    job.setText(userInfo.getJob());
 
                     Picasso.get().load(urlImage).into(image);
-//                    Picasso.get().load(urlImage)
-//                            .placeholder(R.mipmap.avatar).error(R.drawable.ic_launcher_background)
-//                            .into(image);
                 }
                 else
                 {
@@ -100,5 +146,49 @@ public class profile extends AppCompatActivity {
 
             }
         });
+    }
+
+    private void getProfileFromSharedPreferences(){
+        JSONObject objUser = sharedPrefManager.getSPObjectUser();
+        try
+        {
+//            urlImage = objUser.getString("avatar");
+
+            fullname.setText(objUser.getString("fullName"));
+            email.setText(objUser.getString("email"));
+
+            String strBirthday = objUser.getString("birthday");
+            Log.e("test","birthday" + strBirthday);
+
+            if (strBirthday.equals(""))
+            {
+                birthday.setText("");
+            }
+            else
+            {
+                String dateInString = strBirthday.substring(0,10);
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+                Date date = formatter.parse(dateInString);
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                birthday.setText(dateFormat.format(date).toString());
+            }
+            numberphone.setText(objUser.getString("phone"));
+            description.setText(objUser.getString("discription"));
+            gender.setText(objUser.getString("gender"));
+            job.setText(objUser.getString("job"));
+            urlImage = objUser.getString("avatar");
+            if (urlImage.equals(""))
+            {
+                Picasso.get().load("https://miro.medium.com/max/720/1*W35QUSvGpcLuxPo3SRTH4w.png").into(image);
+            }
+            else {
+                Picasso.get().load(objUser.getString("avatar")).into(image);
+            }
+
+        }
+        catch (JSONException | ParseException e) {
+            e.printStackTrace();
+        }
+
     }
 }

@@ -22,9 +22,10 @@ allprojects {
         google()
         jcenter()
 //        otp & qr code
-        maven { url "https://jitpack.io"}
 //        codeinput line
-        maven { url "http://dl.bintray.com/glomadrian/maven" }
+//        maven { url "http://dl.bintray.com/glomadrian/maven" }
+        maven { url "https://jitpack.io"}
+
 
 
     }

@@ -17,7 +17,7 @@ import com.example.myapplication.util.ProgressDialog;
 import com.example.myapplication.util.Validate;
 import com.example.myapplication.util.api.BaseApiService;
 import com.example.myapplication.util.api.UtilsApi;
-import com.github.glomadrian.codeinputlib.CodeInput;
+//import com.github.glomadrian.codeinputlib.CodeInput;
 
 
 import org.json.JSONObject;
@@ -31,7 +31,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class LastForgetPassword extends AppCompatActivity {
-    @BindView(R.id.input_code) CodeInput code;
+//    @BindView(R.id.input_code) CodeInput code;
+    @BindView(R.id.input_code) EditText code;
     @BindView(R.id.input_password) EditText password;
     @BindView(R.id.input_confirmPassword) EditText confirmPassword;
     @BindView(R.id.btn_save) Button save;
@@ -52,7 +53,7 @@ public class LastForgetPassword extends AppCompatActivity {
 
         ButterKnife.bind(this);
         mContext = this;
-        mApiService = UtilsApi.getAPIService();
+        mApiService = UtilsApi.getAPIService(mContext);
         mValidate = new Validate();
         mProgressDialog = new ProgressDialog();
 
@@ -71,12 +72,12 @@ public class LastForgetPassword extends AppCompatActivity {
         });
     }
     private void createNewPassword(){
-        Character[] codeArr = code.getCode();
-        String strOfInts = Arrays.toString(codeArr).replaceAll("\\[|\\]|,|\\s", "");
-
-        Log.e("test","value of code is: " + strOfInts);
+//        Character[] codeArr = code.getCode();
+//        String strOfInts = Arrays.toString(codeArr).replaceAll("\\[|\\]|,|\\s", "");
+//
+//        Log.e("test","value of code is: " + strOfInts);
 //        mProgressDialog.setProgressDialog(mContext);
-        mApiService.forgotPasswordRequest(mEmail, strOfInts, password.getText().toString())
+        mApiService.forgotPasswordRequest(mEmail, code.getText().toString(), password.getText().toString())
                 .enqueue(new Callback<ResponseBody>() {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {

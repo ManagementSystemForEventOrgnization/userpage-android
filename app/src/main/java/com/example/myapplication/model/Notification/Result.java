@@ -4,6 +4,7 @@ import com.example.myapplication.model.ListEvent.User;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Date;
 import java.util.List;
 
 public class Result {
@@ -40,7 +41,7 @@ public class Result {
     private Boolean isDelete;
     @SerializedName("createdAt")
     @Expose
-    private String createdAt;
+    private Date createdAt;
     @SerializedName("updatedAt")
     @Expose
     private String updatedAt;
@@ -134,11 +135,11 @@ public class Result {
         this.isDelete = isDelete;
     }
 
-    public String getCreatedAt() {
+    public Date getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(String createdAt) {
+    public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }
 

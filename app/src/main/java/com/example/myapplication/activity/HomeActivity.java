@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.example.myapplication.Tab1Fragment;
@@ -17,20 +18,30 @@ import com.example.myapplication.Tab2Fragment;
 import com.example.myapplication.Tab3Fragment;
 import com.example.myapplication.Tab4Fragment;
 import com.example.myapplication.TabAdapter;
+import com.example.myapplication.model.BaseResult;
 import com.example.myapplication.model.Notification.BadgeNumber;
 import com.example.myapplication.util.SharedPrefManager;
 import com.example.myapplication.util.api.BaseApiService;
 import com.example.myapplication.util.api.UtilsApi;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.squareup.picasso.Picasso;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.viewpager.widget.ViewPager;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -60,6 +71,9 @@ public class HomeActivity extends AppCompatActivity {
     BaseApiService mApiService;
     SharedPrefManager sharedPrefManager;
 
+    private GoogleSignInClient mGoogleSignInClient;
+    private static final int RC_SIGN_IN = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,23 +82,39 @@ public class HomeActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         mContext = this;
-        mApiService = UtilsApi.getAPIService();
+        mApiService = UtilsApi.getAPIService(mContext);
         sharedPrefManager = new SharedPrefManager(this);
+
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+
         adapter = new TabAdapter(getSupportFragmentManager());
+        if (sharedPrefManager.getSPObjectUser()!=null){
+            JSONObject objUser = sharedPrefManager.getSPObjectUser();
 
+            View header = navigationView.getHeaderView(0);
+            fullname = (TextView) header.findViewById(R.id.profile_fullname);
+            circleImageView = (CircleImageView) header.findViewById(R.id.profile_image);
+            try {
+                if (objUser.getString("fullName")!=null){
+                    fullname.setText(objUser.getString("fullName"));
+                }
+                if (sharedPrefManager.getSPObjectUser().getString("avatar")!=null){
+                    Picasso.get().load(sharedPrefManager.getSPObjectUser().getString("avatar")).into(circleImageView);
+                }
+            }
+            catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
 
-        View header = navigationView.getHeaderView(0);
-        fullname = (TextView) header.findViewById(R.id.profile_fullname);
-        fullname.setText(sharedPrefManager.getSPName());
-
-        circleImageView = (CircleImageView) header.findViewById(R.id.profile_image);
-        Picasso.get().load(sharedPrefManager.getSPUrlavatar()).into(circleImageView);
 
         setSupportActionBar(toolbar);
         ActionBar actionbar = getSupportActionBar();
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
-
 
 //        add fragments
         adapter.addFragment(new Tab1Fragment(), "All");
@@ -128,13 +158,22 @@ public class HomeActivity extends AppCompatActivity {
                                 startActivity(new Intent(mContext, Chat.class));
                                 break;
                             case R.id.nav_item_qrCode:
-                                startActivity(new Intent(mContext, QRCode.class));
+                                startActivity(new Intent(mContext, ScanQRCode.class));
+                                break;
+                            case R.id.nav_item_creditCard:
+                                startActivity(new Intent(mContext, ListCard.class));
+                                break;
+                            case R.id.nav_item_paymentHistory:
+                                startActivity(new Intent(mContext, Payment.class));
                                 break;
                             case R.id.nav_item_settings:
-                                startActivity(new Intent(mContext, settings.class));
+                                startActivity(new Intent(mContext, MapsActivity.class));
                                 break;
                             case R.id.nav_item_changePassword:
                                 startActivity(new Intent(mContext, ChangePassword.class));
+                                break;
+                            case R.id.nav_item_logout:
+                                getLogout();
                                 break;
                         }
                         mDrawerLayout.closeDrawer(GravityCompat.START);
@@ -143,10 +182,18 @@ public class HomeActivity extends AppCompatActivity {
                 });
     }
     @Override
+    public void onResume()
+    {  // After a pause OR at startup
+        super.onResume();
+        setupBadge();
+        //Refresh your stuff here
+    }
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
 
         final MenuItem menuItem = menu.findItem(R.id.action_notification);
+
 
         View actionView = menuItem.getActionView();
         textCartItemCount = (TextView) actionView.findViewById(R.id.cart_badge);
@@ -171,6 +218,9 @@ public class HomeActivity extends AppCompatActivity {
                 return true;
             case R.id.action_notification:
                 startActivity(new Intent(mContext, Notification.class));
+                break;
+            case R.id.action_scanQR:
+                startActivity(new Intent(mContext, ScanQRCode.class));
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -208,5 +258,46 @@ public class HomeActivity extends AppCompatActivity {
         Intent register = new Intent(HomeActivity.this, profile.class);
         startActivity(register);
     }
+    public void getLogout(){
+        mApiService.getlogout().enqueue(new Callback<BaseResult>() {
+            @Override
+            public void onResponse(Call<BaseResult> call, Response<BaseResult> response) {
+                if(response.isSuccessful()){
+                    signOutGoogle();
+                    sharedPrefManager.logout();
+                    sharedPrefManager.removeCookies();
+                    Toast.makeText(mContext, "Logout successfully!", Toast.LENGTH_LONG).show();
+                    startActivity(new Intent(mContext, MainActivity.class));
+                }
+                else
+                {
+                    try {
+                        JSONObject jsonError = new JSONObject(response.errorBody().string());
+                        Log.e("debug", "onFailure: ERROR 600 > " + jsonError.getJSONObject("error").getString("message") );
+                        Toast.makeText(mContext, jsonError.getJSONObject("error").getString("message"), Toast.LENGTH_LONG).show();
+                    } catch (Exception e) {
+                        Toast.makeText(mContext, e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                }
+            }
+
+
+            @Override
+            public void onFailure(Call<BaseResult> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void signOutGoogle() {
+        mGoogleSignInClient.signOut()
+                .addOnCompleteListener(this, new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+
+                    }
+                });
+    }
+    // [END signOut]
 
 }

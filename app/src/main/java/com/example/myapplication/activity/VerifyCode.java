@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,7 +19,7 @@ import com.example.myapplication.util.Constants;
 import com.example.myapplication.util.Validate;
 import com.example.myapplication.util.api.BaseApiService;
 import com.example.myapplication.util.api.UtilsApi;
-import com.github.glomadrian.codeinputlib.CodeInput;
+//import com.github.glomadrian.codeinputlib.CodeInput;
 
 import org.json.JSONObject;
 
@@ -31,7 +32,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class VerifyCode extends AppCompatActivity {
-    @BindView(R.id.input_code) CodeInput code;
+//    @BindView(R.id.input_code) CodeInput code;
+    @BindView(R.id.input_code) EditText code;
     @BindView(R.id.txt_email) TextView email;
     @BindView(R.id.btn_verify) Button btn_verify;
 
@@ -49,7 +51,7 @@ public class VerifyCode extends AppCompatActivity {
 
         ButterKnife.bind(this);
         mContext = this;
-        mApiService = UtilsApi.getAPIService();
+        mApiService = UtilsApi.getAPIService(mContext);
         mValidate = new Validate();
 
         Intent intent = getIntent();
@@ -61,18 +63,18 @@ public class VerifyCode extends AppCompatActivity {
         btn_verify.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mValidate.validateVerifyCode(code, mContext))
-                {
-                    verify();
-                }
+//                if(mValidate.validateVerifyCode(code, mContext))
+//                {
+//                    verify();
+//                }
             }
         });
     }
     private void verify(){
-        Character[] codeArr = code.getCode();
-        String strOfInts = Arrays.toString(codeArr).replaceAll("\\[|\\]|,|\\s", "");
-        Log.e("test","value of code is: " + strOfInts);
-        mApiService.getverifyToken(strOfInts).enqueue(new Callback<BaseResult>() {
+//        Character[] codeArr = code.getCode();
+//        String strOfInts = Arrays.toString(codeArr).replaceAll("\\[|\\]|,|\\s", "");
+//        Log.e("test","value of code is: " + strOfInts);
+        mApiService.getverifyToken(code.getText().toString()).enqueue(new Callback<BaseResult>() {
             @Override
             public void onResponse(Call<BaseResult> call, Response<BaseResult> response) {
                 if(response.isSuccessful())

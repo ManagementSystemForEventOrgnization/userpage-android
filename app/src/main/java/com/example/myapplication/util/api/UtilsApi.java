@@ -1,14 +1,15 @@
 package com.example.myapplication.util.api;
 
+import android.content.Context;
+
 public class UtilsApi {
-//    http://localhost:5000
-//    172.16.3.123:5000
-//  192.168.1.2  changeable
-
-
-    public static String BASE_URL_API = "http:/172.16.0.49:5000/api/";
+//    https://event-orgnization.herokuapp.com/api
+//    172.16.3.198:5000
+    public static String BASE_URL_API = "https://event-orgnization.herokuapp.com/api/";
     //  Interface BaseApiService
-    public static BaseApiService getAPIService(){
-        return RetrofitClient.getClient(BASE_URL_API).create(BaseApiService.class);
+    public static BaseApiService getAPIService(Context context){
+        return UsageSample.getClient(BASE_URL_API, context).create(BaseApiService.class);
+//        return RetrofitClient.getClient(BASE_URL_API).create(BaseApiService.class);
+
     }
 }

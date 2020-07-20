@@ -3,8 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.myapplication">
 
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:allowBackup="true"
@@ -14,10 +17,46 @@
         android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
+        android:theme="@style/Theme.AppCompat.Light.NoActionBar"
         android:usesCleartextTraffic="true"
         tools:replace="android:label">
-        <activity android:name=".activity.DetailEvent"></activity>
+        <activity android:name=".activity.LoginGoogle"></activity>
+        <activity android:name=".activity.ProfileUser" />
+        <activity
+            android:name=".activity.ListApplyUser"
+            android:label="List apply user" />
+        <activity
+            android:name=".activity.DetailPayment"
+            android:label="Detail Payment" />
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyCpffFx5sZstG6aclYoEnodK4Nj5DF14F4" />
+
+        <activity
+            android:name=".activity.MapsActivity"
+            android:label="@string/title_activity_maps" />
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
+        <activity
+            android:name=".activity.ChoosePayment"
+            android:label="Choose payment" />
+        <activity
+            android:name=".activity.AddCard"
+            android:label="Add card" />
+        <activity
+            android:name=".activity.ListCard"
+            android:label="List card" />
+        <activity
+            android:name=".activity.Payment"
+            android:label="Payment" />
+        <activity android:name=".activity.Comments" />
+        <activity
+            android:name=".activity.DetailEvent"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
             android:name=".activity.QRCode"
             android:label="@string/qrcode" />
@@ -39,11 +78,12 @@
         <activity
             android:name=".activity.Chat"
             android:label="@string/chat_admin" />
-        <activity android:name=".activity.Notification" />
+        <activity
+            android:name=".activity.Notification"
+            android:label="Notification" />
         <activity
             android:name=".activity.EditProfile"
-            android:icon="@drawable/ic_keyboard_arrow_left_white_24dp"
-            android:label="@string/edit_info" />
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
             android:name=".activity.ForgetPassword"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
@@ -53,9 +93,7 @@
         <activity
             android:name=".activity.Login"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
-        <activity
-            android:name=".activity.profile"
-            android:label="@string/info" />
+        <activity android:name=".activity.profile" />
         <activity
             android:name=".activity.HomeActivity"
             android:label="@string/title_activity_home"

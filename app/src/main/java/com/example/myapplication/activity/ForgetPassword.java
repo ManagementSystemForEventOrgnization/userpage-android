@@ -45,7 +45,7 @@ public class ForgetPassword extends AppCompatActivity {
 
         ButterKnife.bind(this);
         mContext = this;
-        mApiService = UtilsApi.getAPIService();
+        mApiService = UtilsApi.getAPIService(mContext);
         mValidate = new Validate();
         mProgressDialog = new ProgressDialog();
 

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:fitsSystemWindows="true"
+    tools:context=".activity.ChoosePayment">
+    <include
+        layout="@layout/custom_action_bar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize" />
+    <LinearLayout
+        android:id="@+id/item_zalopay"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@drawable/shapeinput">
+        <ImageView
+            android:id="@+id/img_zalopay"
+            android:layout_width="60dp"
+            android:layout_height="40dp"
+            android:layout_margin="15dp"
+            android:layout_gravity="center"
+            android:src="@mipmap/zalopay" />
+            <TextView
+                android:id="@+id/txt_zalopay"
+                android:layout_width="wrap_content"
+                android:layout_gravity="center"
+                android:text="Zalo Pay"
+                android:textStyle="bold"
+                android:textSize="25sp"
+                android:layout_height="40dp"/>
+        </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/white"/>
+    <LinearLayout
+        android:id="@+id/item_masterCard"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@drawable/shapeinput">
+        <ImageView
+            android:id="@+id/img_mastercard"
+            android:layout_width="60dp"
+            android:layout_height="40dp"
+            android:layout_margin="15dp"
+
+            android:layout_gravity="center"
+            android:src="@mipmap/master_card" />
+        <TextView
+            android:id="@+id/txt_mastercard"
+            android:layout_width="wrap_content"
+            android:layout_gravity="center"
+            android:text="Master Card"
+            android:textStyle="bold"
+            android:textSize="25sp"
+            android:layout_height="40dp"/>
+    </LinearLayout>
+</LinearLayout>

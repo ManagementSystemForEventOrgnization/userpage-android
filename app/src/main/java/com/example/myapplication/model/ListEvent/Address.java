@@ -10,6 +10,11 @@ public class Address {
     @SerializedName("map")
     @Expose
     private Map map;
+//    27/06
+//  add new field
+    @SerializedName("detailImage")
+    @Expose
+    private String detailImage;
 
     public String getLocation() {
         return location;
@@ -26,4 +31,14 @@ public class Address {
     public void setMap(Map map) {
         this.map = map;
     }
+
+
+    public String getDetailImage() {
+        return detailImage;
+    }
+
+    public void setDetailImage(String detailImage) {
+        this.detailImage = detailImage;
+    }
+
 }

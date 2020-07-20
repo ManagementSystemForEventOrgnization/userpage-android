@@ -6,7 +6,7 @@ import android.util.Patterns;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.github.glomadrian.codeinputlib.CodeInput;
+//import com.github.glomadrian.codeinputlib.CodeInput;
 
 import java.util.Arrays;
 
@@ -38,13 +38,13 @@ public class Validate {
         confirm.requestFocus();
         return false;
     }
-    public boolean validateVerifyCode(CodeInput code, Context mContext){
-        Character[] codeArr = code.getCode();
-        String strOfInts = Arrays.toString(codeArr).replaceAll("\\[|\\]|,|\\s", "");
-        if(strOfInts.length()==6)
-            return true;
-        Toast.makeText(mContext, "Please enter the correct number", Toast.LENGTH_SHORT).show();
-        return false;
-    }
+//    public boolean validateVerifyCode(CodeInput code, Context mContext){
+//        Character[] codeArr = code.getCode();
+//        String strOfInts = Arrays.toString(codeArr).replaceAll("\\[|\\]|,|\\s", "");
+//        if(strOfInts.length()==6)
+//            return true;
+//        Toast.makeText(mContext, "Please enter the correct number", Toast.LENGTH_SHORT).show();
+//        return false;
+//    }
 
 }

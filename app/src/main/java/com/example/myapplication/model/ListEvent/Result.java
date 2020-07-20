@@ -57,6 +57,15 @@ public class Result {
     @SerializedName("ticket")
     @Expose
     private Ticket ticket;
+//    27/06
+//    add new field
+    @SerializedName("domain")
+    @Expose
+    private String domain;
+//    add 15/7
+    @SerializedName("isRequire")
+    @Expose
+    private Boolean isRequire;
 
     public String getId() {
         return id;
@@ -192,5 +201,21 @@ public class Result {
 
     public void setTicket(Ticket ticket) {
         this.ticket = ticket;
+    }
+
+//    add new field
+    public String getDomain(){
+        return domain;
+    }
+    public void setDomain(String domain){
+        this.domain = domain;
+    }
+//    15/7
+public Boolean getIsRequire() {
+    return isRequire;
+}
+
+    public void setIsRequire(Boolean isRequire) {
+        this.isRequire = isRequire;
     }
 }

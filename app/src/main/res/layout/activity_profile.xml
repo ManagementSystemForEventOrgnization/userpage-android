@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:fitsSystemWindows="true"
+    android:background="@color/black"
     tools:context="com.example.myapplication.activity.Login">
-
+    <include
+        layout="@layout/custom_action_bar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize" />
 <ScrollView
     android:layout_height="match_parent"
     android:layout_width="match_parent"
@@ -14,9 +19,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="@color/black"
-        >
+        android:orientation="vertical">
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="200dp">
@@ -24,6 +27,7 @@
                 android:id="@+id/profile_image"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
+                android:src="@mipmap/default_avatar"
                 android:layout_centerInParent="true"
                 app:civ_border_color="#FF000000"
                 app:civ_border_width="2dp" />
@@ -36,7 +40,8 @@
                 android:textColor="@color/white"
                 android:textStyle="bold"
                 android:layout_centerInParent="true"
-                android:textSize="30sp" />
+                android:textSize="30sp"
+                android:text=""/>
 
         </RelativeLayout>
 
@@ -58,24 +63,33 @@
             android:drawablePadding="10dp"
             android:inputType="textEmailAddress"
             android:textColor="@color/white" />
-        <TextView
+        <LinearLayout
+            android:id="@+id/itemBirthday"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:layout_marginStart="20dp"
-            android:text="@string/birthday"
-            android:textColor="@color/white"
-            android:drawableStart="@mipmap/icons_birthday"
-            android:drawablePadding="5dp"/>
+            android:orientation="vertical"
+            android:visibility="visible">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginStart="20dp"
+                android:text="@string/birthday"
+                android:textColor="@color/white"
+                android:drawableStart="@mipmap/icons_birthday"
+                android:drawablePadding="5dp"/>
 
-        <TextView
-            android:id="@+id/txt_birthday"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="42dp"
-            android:drawablePadding="10dp"
-            android:inputType="date"
-            android:textColor="@color/white" />
+            <TextView
+                android:id="@+id/txt_birthday"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="42dp"
+                android:drawablePadding="10dp"
+                android:inputType="date"
+                android:text=""
+                android:textColor="@color/white" />
+        </LinearLayout>
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -93,61 +107,87 @@
             android:layout_marginStart="42dp"
             android:drawablePadding="10dp"
             android:inputType="phone"
+            android:text=""
             android:textColor="@color/white" />
-        <TextView
+        <LinearLayout
+            android:id="@+id/itemGender"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:layout_marginStart="20dp"
-            android:text="@string/gender"
-            android:textColor="@color/white"
-            android:drawableStart="@mipmap/icons_gender"
-            android:drawablePadding="5dp"/>
+            android:orientation="vertical"
+            android:visibility="visible">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginStart="20dp"
+                android:text="@string/gender"
+                android:textColor="@color/white"
+                android:drawableStart="@mipmap/icons_gender"
+                android:drawablePadding="5dp"/>
 
-        <TextView
-            android:id="@+id/txt_gender"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="42dp"
-            android:drawablePadding="10dp"
-            android:textAllCaps="true"
-            android:textColor="@color/white" />
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:layout_marginStart="20dp"
-            android:text="@string/job"
-            android:textColor="@color/white"
-            android:drawableStart="@mipmap/icons_job"
-            android:drawablePadding="5dp"/>
+            <TextView
+                android:id="@+id/txt_gender"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="42dp"
+                android:drawablePadding="10dp"
+                android:textAllCaps="true"
+                android:text=""
+                android:textColor="@color/white" />
+        </LinearLayout>
 
-        <TextView
-            android:id="@+id/txt_job"
+        <LinearLayout
+            android:id="@+id/itemJob"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="42dp"
-            android:drawablePadding="10dp"
-            android:textColor="@color/white" />
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:layout_marginStart="20dp"
-            android:text="@string/description"
-            android:textColor="@color/white"
-            android:drawableStart="@mipmap/icons_note"
-            android:drawablePadding="5dp"/>
+            android:orientation="vertical"
+            android:visibility="visible">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginStart="20dp"
+                android:text="@string/job"
+                android:textColor="@color/white"
+                android:drawableStart="@mipmap/icons_job"
+                android:drawablePadding="5dp"/>
 
-        <TextView
-            android:id="@+id/txt_description"
+            <TextView
+                android:id="@+id/txt_job"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="42dp"
+                android:drawablePadding="10dp"
+                android:text=""
+                android:textColor="@color/white" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/itemDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="50dp"
-            android:drawablePadding="10dp"
-            android:textColor="@color/white" />
+            android:orientation="vertical"
+            android:visibility="visible">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginStart="20dp"
+                android:text="@string/description"
+                android:textColor="@color/white"
+                android:drawableStart="@mipmap/icons_note"
+                android:drawablePadding="5dp"/>
 
+            <TextView
+                android:id="@+id/txt_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="50dp"
+                android:drawablePadding="10dp"
+                android:text=""
+                android:textColor="@color/white" />
+        </LinearLayout>
     </LinearLayout>
 
 </ScrollView>
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</LinearLayout>

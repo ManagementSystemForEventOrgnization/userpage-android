@@ -67,5 +67,11 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="hashString">**** **** **** ****</string>
+
+    <!--    google maps api key-->
+    <!--    <string name="google_maps_key">AIzaSyCpffFx5sZstG6aclYoEnodK4Nj5DF14F4</string>-->
+    <string name="title_activity_maps">Map</string>
+    <string name="server_client_id">625463994838-h0qjq4cvc10tr2msqf1o9ebbe66kfmoh.apps.googleusercontent.com</string>
 
 </resources>

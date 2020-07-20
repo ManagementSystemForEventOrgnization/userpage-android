@@ -3,6 +3,8 @@ package com.example.myapplication.model.ListEvent;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Date;
+
 public class User {
     @SerializedName("avatar")
     @Expose
@@ -39,7 +41,7 @@ public class User {
     private String tOKEN;
     @SerializedName("birthday")
     @Expose
-    private String birthday;
+    private Date birthday;
     @SerializedName("discription")
     @Expose
     private String discription;
@@ -144,11 +146,11 @@ public class User {
         this.tOKEN = tOKEN;
     }
 
-    public String getBirthday() {
+    public Date getBirthday() {
         return birthday;
     }
 
-    public void setBirthday(String birthday) {
+    public void setBirthday(Date birthday) {
         this.birthday = birthday;
     }
 

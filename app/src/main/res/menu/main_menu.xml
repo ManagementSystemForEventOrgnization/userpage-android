@@ -7,6 +7,11 @@
         android:title="Search"
         app:showAsAction="always"
         />
+    <item
+        android:id="@+id/action_scanQR"
+        android:icon="@mipmap/icons_qrcode"
+        android:title="Scan QRCode"
+        app:showAsAction="always"/>
 
     <item
         android:id="@+id/action_notification"

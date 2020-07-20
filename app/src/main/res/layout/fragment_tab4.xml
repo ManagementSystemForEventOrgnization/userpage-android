@@ -3,19 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     android:background="@color/black"
     tools:context=".Tab4Fragment">
-    <View
-        android:id="@+id/divider"
-        android:layout_width="1dp"
-        android:layout_height="match_parent"
-        android:layout_marginLeft="70dp"
-        android:outlineAmbientShadowColor="@color/white"
-        android:background="?android:attr/listDivider" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="90dp"
         android:orientation="vertical">
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvListSelf"
@@ -24,4 +18,5 @@
             android:layout_marginRight="20dp"
             ></androidx.recyclerview.widget.RecyclerView>
     </LinearLayout>
+
 </FrameLayout>

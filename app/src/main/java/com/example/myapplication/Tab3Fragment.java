@@ -44,7 +44,7 @@ public class Tab3Fragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_tab3 ,container, false);
-        mApiService = UtilsApi.getAPIService();
+        mApiService = UtilsApi.getAPIService(getActivity());
         listAllEventResponses = new ArrayList<>();
         RecyclerView rvListPast = (RecyclerView) rootView.findViewById(R.id.rvListPast);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
@@ -65,6 +65,7 @@ public class Tab3Fragment extends Fragment {
                             Result items = listPastEventItems.get(position);
                             String id = items.getId();
                             Intent detailEvent = new Intent(getActivity(), DetailEvent.class);
+                            detailEvent.putExtra(Constants.KEY_STATUS, "PAST");
                             detailEvent.putExtra(Constants.KEY_ID, id);
                             startActivity(detailEvent);
 

@@ -1,32 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:fitsSystemWindows="true"
     tools:context="com.example.myapplication.activity.HomeActivity">
-
-    <RelativeLayout
+    <include
+        layout="@layout/custom_action_bar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize" />
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:orientation="vertical"
         android:background="@color/black">
         <TextView
+            android:id="@+id/eventQr"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="10dp"
+            android:layout_gravity="center_horizontal"
             android:textColor="@color/white"
             android:fontFamily="sans-serif-condensed-medium"
-            android:textSize="30sp"
-            android:text="Use QR Code to check in your event"/>
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:text="EVENT"/>
+        <TextView
+            android:id="@+id/introQr"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:textColor="@color/white"
+            android:textSize="17sp"
+            android:fontFamily="sans-serif-condensed-medium"
+            android:text="The qr code to verify attendances in session"/>
 
         <ImageView
             android:id="@+id/imageView"
             android:layout_width="350dp"
             android:layout_height="350dp"
-            android:layout_marginTop="150dp"
-            android:layout_centerHorizontal="true" />
-    </RelativeLayout>
-
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+            android:layout_marginTop="35dp"
+            android:layout_gravity="center_horizontal" />
+    </LinearLayout>
+</LinearLayout>

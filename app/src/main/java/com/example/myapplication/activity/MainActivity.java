@@ -1,12 +1,21 @@
 package com.example.myapplication.activity;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.myapplication.R;
-import com.example.myapplication.util.ProgressDialog;
+import com.example.myapplication.model.DetailProfile;
+import com.example.myapplication.model.Profile;
 import com.example.myapplication.util.SharedPrefManager;
 import com.example.myapplication.util.Validate;
 import com.example.myapplication.util.api.BaseApiService;
 import com.example.myapplication.util.api.UtilsApi;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
+
+import com.google.android.gms.tasks.Task;
 
 import android.content.Context;
 import android.content.Intent;
@@ -22,6 +31,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -39,12 +49,13 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.txt_createAccount) TextView txt_createAccount;
     @BindView(R.id.txt_loginGoogle) TextView txt_loginGoogle;
 
-
     Context mContext;
     BaseApiService mApiService;
     SharedPrefManager sharedPrefManager;
     Validate mValidate;
-    ProgressDialog mProgressDialog;
+
+    private GoogleSignInClient mGoogleSignInClient;
+    private static final int RC_SIGN_IN = 0;
 
 
     @Override
@@ -54,10 +65,14 @@ public class MainActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
         mContext = this;
-        mApiService = UtilsApi.getAPIService();
+        mApiService = UtilsApi.getAPIService(mContext);
         sharedPrefManager = new SharedPrefManager(this);
         mValidate = new Validate();
-        mProgressDialog = new ProgressDialog();
+
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
 
 //        click button
@@ -76,8 +91,8 @@ public class MainActivity extends AppCompatActivity {
         txt_loginGoogle.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                Intent loginGg = new Intent(mContext, profile.class);
-                startActivity(loginGg);
+                Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+                startActivityForResult(signInIntent, RC_SIGN_IN);
             }
         });
 //        textview txt_createAccount clicked
@@ -96,12 +111,93 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(forgetPassword);
             }
         });
+        if (sharedPrefManager.getSPLogin()){
+            Intent home = new Intent(mContext, HomeActivity.class);
+            startActivity(home);
+            finish();
+        }
+    }
+    @Override
+    protected void onStart() {
+        super.onStart();
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+        updateUI(account);
+    }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
-//        if (sharedPrefManager.getSPLogin()==true){
-//            Intent home = new Intent(Login.this, HomeActivity.class);
-//            startActivity(home);
-//            finish();
-//        }
+        // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
+        if (requestCode == RC_SIGN_IN) {
+            // The Task returned from this call is always completed, no need to attach
+            // a listener.
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            handleSignInResult(task);
+        }
+    }
+
+    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
+        try {
+            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
+
+            // Signed in successfully, show authenticated UI.
+            updateUI(account);
+        } catch (ApiException e) {
+            // The ApiException status code indicates the detailed failure reason.
+            // Please refer to the GoogleSignInStatusCodes class reference for more information.
+            Log.w("debug", "signInResult:failed code=" + e.getStatusCode());
+            updateUI(null);
+        }
+}
+    private void updateUI(@Nullable GoogleSignInAccount account) {
+
+        if (account != null) {
+            DetailProfile detailProfile = new DetailProfile(account.getId(), account.getEmail(), Objects.requireNonNull(account.getPhotoUrl()).toString(), account.getDisplayName());
+            Profile profile = new Profile(detailProfile);
+
+            Log.e("debug", account.getId() + account.getDisplayName() + account.getEmail() + account.getPhotoUrl() );
+            mApiService.login_google(profile).enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    if (response.isSuccessful())
+                    {
+                        try {
+                            JSONObject jsonRESULTS = new JSONObject(response.body().string());
+                            Toast.makeText(mContext, "Logined", Toast.LENGTH_SHORT).show();
+                            sharedPrefManager.saveSPObjectUser(SharedPrefManager.SP_OBJUSER, jsonRESULTS.getJSONObject("result"));
+                            sharedPrefManager.saveSPString(SharedPrefManager.SP_IDUSER,sharedPrefManager.getSPObjectUser().getString("_id") );
+                            sharedPrefManager.saveSPBoolean(SharedPrefManager.SP_LOGIN, true);
+                            Log.e("debug", "onFailure: sharepreferences > " + sharedPrefManager.getSPLogin() );
+                            Log.e("debug", "onFailure: id is  > " + sharedPrefManager.getSPObjectUser().getString("_id"));
+
+                            startActivity(new Intent(mContext, HomeActivity.class));
+                            finish();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    else
+                    {
+                        try {
+                            JSONObject jsonError = new JSONObject(response.errorBody().string());
+                            Log.e("debug", "onFailure: ERROR 600 > " + jsonError.getJSONObject("error").getString("message") );
+                            Toast.makeText(mContext, jsonError.getJSONObject("error").getString("message"), Toast.LENGTH_LONG).show();
+                        } catch (Exception e) {
+                            Toast.makeText(mContext, e.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+                }
+            });
+        } else {
+            Log.e("debug", "error 123");
+        }
     }
 
     private void login(){
@@ -113,19 +209,14 @@ public class MainActivity extends AppCompatActivity {
                             try {
                                 JSONObject jsonRESULTS = new JSONObject(response.body().string());
                                 Toast.makeText(mContext, "Logined", Toast.LENGTH_SHORT).show();
-                                startActivity(new Intent(mContext, HomeActivity.class));
-                                String email = jsonRESULTS.getJSONObject("result").getString("email");
-                                String fullname = jsonRESULTS.getJSONObject("result").getString("fullName");
-                                String urlImage = jsonRESULTS.getJSONObject("result").getString("avatar");
-                                sharedPrefManager.saveSPString(SharedPrefManager.SP_EMAIL, email);
-                                // Shared Pref session login
+                                sharedPrefManager.saveSPObjectUser(SharedPrefManager.SP_OBJUSER, jsonRESULTS.getJSONObject("result"));
+                                sharedPrefManager.saveSPString(SharedPrefManager.SP_IDUSER,sharedPrefManager.getSPObjectUser().getString("_id") );
                                 sharedPrefManager.saveSPBoolean(SharedPrefManager.SP_LOGIN, true);
-                                sharedPrefManager.saveSPString(SharedPrefManager.SP_NAME, fullname);
-                                sharedPrefManager.saveSPString(SharedPrefManager.SP_URLAVATAR, urlImage);
-                                Log.e("test", "value share:"+ sharedPrefManager.getSPEmail());
+                                Log.e("debug", "onFailure: sharepreferences > " + sharedPrefManager.getSPLogin() );
+                                Log.e("debug", "onFailure: id is  > " + sharedPrefManager.getSPObjectUser().getString("_id"));
 
+                                startActivity(new Intent(mContext, HomeActivity.class));
                                 finish();
-
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             } catch (IOException e) {
@@ -145,7 +236,6 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(Call<ResponseBody> call, Throwable t) {
                         Log.e("debug", "onFailure: ERROR > " + t.toString());
-                        mProgressDialog.dismissProgressDialog(mContext);
                     }
                 });
     }
