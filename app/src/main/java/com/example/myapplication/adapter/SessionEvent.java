@@ -2,7 +2,6 @@ package com.example.myapplication.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.LayoutInflater;

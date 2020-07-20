@@ -9,6 +9,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -30,6 +31,7 @@ import com.example.myapplication.util.api.BaseApiService;
 import com.example.myapplication.util.api.UtilsApi;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
@@ -38,7 +40,6 @@ import com.squareup.picasso.Picasso;
 
 import org.json.JSONObject;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -51,7 +52,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class DetailEvent extends AppCompatActivity {
+public class DetailEvent extends AppCompatActivity implements OnMapReadyCallback{
 
     @BindView(R.id.img_banner) ImageView img_banner;
     @BindView(R.id.txt_name) TextView txt_name;
@@ -92,13 +93,13 @@ public class DetailEvent extends AppCompatActivity {
     String eventId, typeTab,statusSession;
     Boolean isCancelSession = false;
     Boolean isReject = false;
-//    DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
     Date date = new Date();
+    int positionMap = 0;
+    Double Lat = -34.0;
+    Double Lng= 154.0;
 
 //    private MarkerOptions options = new MarkerOptions();
 
-
-//    List<String> arrSessionIds;
 
     Context mContext;
     BaseApiService mApiService;
@@ -109,9 +110,9 @@ public class DetailEvent extends AppCompatActivity {
         setContentView(R.layout.activity_detail_event);
 
         // when the map is ready to be used.
-//        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-//                .findFragmentById(R.id.map1);
-//        mapFragment.getMapAsync(this);
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map1);
+        mapFragment.getMapAsync(this);
 
         ButterKnife.bind(this);
         mContext = this;
@@ -140,6 +141,11 @@ public class DetailEvent extends AppCompatActivity {
             }
         });
         getDetailEvent();
+
+//        Lat = 10.7624229;
+//        Lng = 106.6790081;
+//        Lat = event.getSession().get(positionMap).getAddress().getMap().getLat();
+//        Lng = event.getSession().get(positionMap).getAddress().getMap().getLng();
     }
     @Override
     public void onBackPressed() {
@@ -173,7 +179,9 @@ public class DetailEvent extends AppCompatActivity {
                         @Override
                         public void itemListSessionDateOnClick(View v, int position) {
                             sessionItem = dateItems.get(position);
+                            positionMap = position;
                             getDetailSession(sessionItem);
+                            Log.e("positionMap", Integer.toString(positionMap));
                         }
                     }));
                     if (event.getIsSellTicket()){
@@ -281,23 +289,6 @@ public class DetailEvent extends AppCompatActivity {
             {
                 statusSession = "CANJOIN";
             }
-//            if (sessionItem.getStatus()==null)
-//            {
-//                statusSession = "CANJOIN";
-//            }
-//            else
-//            {
-//                statusSession = sessionItem.getStatus();
-//            }
-
-        //            if (sessionItem.getIsCancel()==null)
-//            {
-//                statusSession = "CANJOIN";
-//            }
-//            else
-//            {
-//                isCancelSession = sessionItem.getIsCancel();
-//            }
 
             if (sessionItem.getStatus()!=null)
             {
@@ -394,9 +385,6 @@ public class DetailEvent extends AppCompatActivity {
                 }
             }
 
-                // not visible button
-//                btn_cancelEvent.setVisibility(View.GONE);
-//                btn_applyEvent.setVisibility(View.GONE);
         if(typeTab.equals("SELF"))
         {
             btn_getQrcode.setVisibility(View.VISIBLE);
@@ -429,14 +417,35 @@ public class DetailEvent extends AppCompatActivity {
 
     }
 
-//    @Override
-//    public void onMapReady(GoogleMap googleMap) {
-//        mMap = googleMap;
-//        // Add a marker in Sydney and move the camera
-//
-////        LatLng sydney = new LatLng(sessionItem.getAddress().getMap().getLat(), sessionItem.getAddress().getMap().getLng());
-//        LatLng myplace = new LatLng(10.7624176, 106.6811968);
-//        mMap.addMarker(new MarkerOptions().position(myplace).title("My event"));
-//        mMap.moveCamera(CameraUpdateFactory.newLatLng(myplace));
-//    }
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+
+        MapsInitializer.initialize(getApplicationContext());
+
+        mMap = googleMap;
+
+        // Add a marker in Sydney and move the camera
+//        10.7624229
+//        106.6790081
+//        LatLng sydney = new LatLng(sessionItem.getAddress().getMap().getLat(), sessionItem.getAddress().getMap().getLng());
+        Log.e("position test", Integer.toString(positionMap));
+        mApiService.get_event_inf(eventId).enqueue(new Callback<Example>() {
+            @Override
+            public void onResponse(Call<Example> call, Response<Example> response) {
+                if (response.isSuccessful()){
+                    event = response.body().getResult().getEvent();
+                    Lat = event.getSession().get(positionMap).getAddress().getMap().getLat();
+                    Lng = event.getSession().get(positionMap).getAddress().getMap().getLng();
+                    LatLng myplace = new LatLng(Lat, Lng);
+                    mMap.addMarker(new MarkerOptions().position(myplace).title("My event"));
+                    mMap.moveCamera(CameraUpdateFactory.newLatLng(myplace));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Example> call, Throwable t) {
+
+            }
+        });
+    }
 }

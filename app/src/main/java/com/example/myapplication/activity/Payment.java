@@ -128,26 +128,6 @@ public class Payment extends AppCompatActivity {
                 {
                     List<Result> paymentItems = response.body().getResult();
                     myUserId = sharedPrefManager.getSpIduser();
-//                    for (int i =0;i<paymentItems.size();i++)
-//                    {
-//                        if (paymentItems.get(i).getStatus().equals("PAID"))
-//                        {
-//                            if (paymentItems.get(i).getSessionRefunded().size() == 0)
-//                            {
-//                                if (paymentItems.get(i).getSender().getId().equals(myUserId)){
-//                                    totalExpenditure += paymentItems.get(i).getAmount();
-//                                }
-//                                else{
-//                                    totalRevenue += paymentItems.get(i).getAmount();
-//                                }
-//                            }
-//                            else
-//                            {
-//                                totalRevenue +=0;
-//                                totalExpenditure += 0;
-//                            }
-//                        }
-//                    }
                     rvPayments.setAdapter(new PaymentAdapter(mContext, paymentItems,myUserId));
 
                     rvPayments.addOnItemTouchListener(new RecyclerItemClickListener(mContext, new RecyclerItemClickListener.OnItemClickListener() {
