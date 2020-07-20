@@ -5,6 +5,7 @@ import android.net.Uri;
 import com.example.myapplication.model.ApplyEvent;
 import com.example.myapplication.model.BaseResult;
 import com.example.myapplication.model.BaseUser;
+import com.example.myapplication.model.Chat.Result;
 import com.example.myapplication.model.ListEvent.Example;
 import com.example.myapplication.model.Notification.BadgeNumber;
 import com.example.myapplication.model.Profile;
@@ -118,7 +119,10 @@ public interface BaseApiService {
     Call<BadgeNumber> getBadgeNumber();
 //    get list notification
     @GET("getListNotification")
-    Call<com.example.myapplication.model.Notification.Example> getListNotification();
+    Call<com.example.myapplication.model.Notification.Example> getListNotificationFirst();
+//    load more notification
+    @GET("getListNotification")
+    Call<com.example.myapplication.model.Notification.Example> getListNotification(@Query("pageNumber") int pageNumber);
 
 //    setReadNotification
     @FormUrlEncoded
@@ -203,4 +207,14 @@ public interface BaseApiService {
     @GET("payment_history_total")
     Call<ResponseBody> get_payment_history_total();
 
+//    get list chat
+    @GET("chat/get_list")
+    Call<com.example.myapplication.model.Chat.Example> get_list_chat(@Query("sender") String sender);
+//    save chat
+    @FormUrlEncoded
+    @POST("chat/save")
+    Call<ResponseBody> saveChat (@Field("sender") String sender,
+                                 @Field("receiver") String receiver,
+                                 @Field("fullName") String fullName,
+                                 @Field("content") String content);
 }

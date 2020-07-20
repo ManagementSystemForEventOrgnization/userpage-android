@@ -4,6 +4,8 @@ import com.example.myapplication.model.ListEvent.User;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Date;
+
 public class Result {
     @SerializedName("_id")
     @Expose
@@ -19,10 +21,10 @@ public class Result {
     private String userId;
     @SerializedName("createdAt")
     @Expose
-    private String createdAt;
+    private Date createdAt;
     @SerializedName("updatedAt")
     @Expose
-    private String updatedAt;
+    private Date updatedAt;
     @SerializedName("__v")
     @Expose
     private Integer v;
@@ -62,19 +64,19 @@ public class Result {
         this.userId = userId;
     }
 
-    public String getCreatedAt() {
+    public Date getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(String createdAt) {
+    public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }
 
-    public String getUpdatedAt() {
+    public Date getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(String updatedAt) {
+    public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
     }
 

@@ -29,16 +29,16 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:weightSum="3"
         android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true"
+        android:background="@drawable/shape_comment"
         android:orientation="horizontal">
     <EditText
         android:id="@+id/input_comment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
-        android:layout_marginBottom="0dp"
-        android:background="@drawable/shape_comment"
+        android:layout_weight="3"
         android:drawablePadding="10dp"
         android:hint="Input your message"
         android:maxLines="3"
@@ -49,7 +49,6 @@
         android:textColorHint="@color/white" />
         <ImageButton
             android:id="@+id/btn_sendComment"
-            android:layout_marginLeft="-60dp"
             style="?android:buttonBarButtonStyle"
             android:paddingBottom="5dp"
             android:src="@drawable/ic_send_white_24dp"

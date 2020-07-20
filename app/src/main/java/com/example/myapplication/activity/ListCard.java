@@ -179,13 +179,9 @@ public class ListCard extends AppCompatActivity {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if(response.isSuccessful()){
-//                    joinEvent(eventId, arrSessionIds, payType);
                     List<String> arrSessionIds = new ArrayList<>();
                     arrSessionIds.add(sessionId);
                     ApplyEvent applyEvent = new ApplyEvent(payType, eventId, arrSessionIds);
-
-//                    String[] arrIdSessions = new String[1];
-//                    arrIdSessions[0] = sessionId;
 
                     mApiService.joinEvent(applyEvent).enqueue(new Callback<ResponseBody>() {
                         @Override

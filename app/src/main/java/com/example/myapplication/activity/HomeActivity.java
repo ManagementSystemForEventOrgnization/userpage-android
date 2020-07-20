@@ -166,9 +166,6 @@ public class HomeActivity extends AppCompatActivity {
                             case R.id.nav_item_paymentHistory:
                                 startActivity(new Intent(mContext, Payment.class));
                                 break;
-                            case R.id.nav_item_settings:
-                                startActivity(new Intent(mContext, MapsActivity.class));
-                                break;
                             case R.id.nav_item_changePassword:
                                 startActivity(new Intent(mContext, ChangePassword.class));
                                 break;

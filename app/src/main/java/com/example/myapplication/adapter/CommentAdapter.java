@@ -12,6 +12,7 @@ import com.example.myapplication.R;
 import com.example.myapplication.model.Comment.Result;
 import com.squareup.picasso.Picasso;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import butterknife.BindView;
@@ -21,6 +22,8 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentHolder> {
     Context mContext;
     List<Result> listComment;
+    SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+
     public CommentAdapter(Context context, List<Result> verticalList)
     {
         this.mContext = context;
@@ -46,6 +49,8 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentH
             Picasso.get().load(commentItem.getUsersComment().getAvatar()).into(holder.avatar_user);
             holder.txt_userName.setText(commentItem.getUsersComment().getFullName());
             holder.txt_contentComment.setText(commentItem.getContent());
+            String time = dateFormat.format(commentItem.getCreatedAt());
+            holder.txt_timeMyComment.setText(time);
         }
 
     }
@@ -58,6 +63,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentH
         @BindView(R.id.txt_userName) TextView txt_userName;
         @BindView(R.id.txt_contentComment) TextView txt_contentComment;
         @BindView(R.id.avatar_user) CircleImageView avatar_user;
+        @BindView(R.id.txt_timeMyComment) TextView txt_timeMyComment;
 
         public CommentHolder(View itemView){
             super(itemView);
