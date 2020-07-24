@@ -43,6 +43,8 @@ import androidx.viewpager.widget.ViewPager;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -84,6 +86,11 @@ public class HomeActivity extends AppCompatActivity {
         mContext = this;
         mApiService = UtilsApi.getAPIService(mContext);
         sharedPrefManager = new SharedPrefManager(this);
+
+        if (sharedPrefManager.getSPLogin()==false){
+            startActivity(new Intent(mContext, Login.class));
+            finish();
+        }
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
@@ -241,6 +248,27 @@ public class HomeActivity extends AppCompatActivity {
                         }
                     }
                 }
+                else {
+                    if (response.code()==600){
+                        JSONObject jsonError = null;
+                        try {
+                            jsonError = new JSONObject(response.errorBody().string());
+                            Log.e("debug", "onFailure: ERROR 600 > " + jsonError.getJSONObject("error").getString("message") );
+                            Toast.makeText(mContext, jsonError.getJSONObject("error").getString("message"), Toast.LENGTH_LONG).show();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    else
+                    {
+                        signOutGoogle();
+                        sharedPrefManager.logout();
+                        sharedPrefManager.removeCookies();
+                        startActivity(new Intent(mContext, Login.class));
+                    }
+                }
             }
             @Override
             public void onFailure(Call<BadgeNumber> call, Throwable t) {
@@ -264,7 +292,7 @@ public class HomeActivity extends AppCompatActivity {
                     sharedPrefManager.logout();
                     sharedPrefManager.removeCookies();
                     Toast.makeText(mContext, "Logout successfully!", Toast.LENGTH_LONG).show();
-                    startActivity(new Intent(mContext, MainActivity.class));
+                    startActivity(new Intent(mContext, Login.class));
                 }
                 else
                 {

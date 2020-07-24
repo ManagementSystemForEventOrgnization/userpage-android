@@ -212,6 +212,8 @@ public class MainActivity extends AppCompatActivity {
                                 sharedPrefManager.saveSPObjectUser(SharedPrefManager.SP_OBJUSER, jsonRESULTS.getJSONObject("result"));
                                 sharedPrefManager.saveSPString(SharedPrefManager.SP_IDUSER,sharedPrefManager.getSPObjectUser().getString("_id") );
                                 sharedPrefManager.saveSPBoolean(SharedPrefManager.SP_LOGIN, true);
+                                sharedPrefManager.getSPObjectUser().getJSONObject("accessToken").getString("token");
+                                Log.e("debug", "onFailure: access token phi save > " + sharedPrefManager.getSPObjectUser().getJSONObject("accessToken").getString("token"));
                                 Log.e("debug", "onFailure: sharepreferences > " + sharedPrefManager.getSPLogin() );
                                 Log.e("debug", "onFailure: id is  > " + sharedPrefManager.getSPObjectUser().getString("_id"));
 

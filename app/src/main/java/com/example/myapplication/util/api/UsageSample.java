@@ -2,6 +2,10 @@ package com.example.myapplication.util.api;
 
 import android.content.Context;
 
+import com.example.myapplication.util.SharedPrefManager;
+
+import org.jetbrains.annotations.NotNull;
+
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
@@ -21,12 +25,25 @@ public class UsageSample {
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
 
         OkHttpClient client = new OkHttpClient();
+       SharedPrefManager sharedPrefManager = new SharedPrefManager(context);
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
         builder.connectTimeout(20, TimeUnit.SECONDS);
         builder.writeTimeout(20, TimeUnit.SECONDS);
         builder.readTimeout(30, TimeUnit.SECONDS);
         builder.addInterceptor(new AddCookiesInterceptor(context)); // VERY VERY IMPORTANT
         builder.addInterceptor(new RecievedCookiesInterceptor(context)); // VERY VERY IMPORTANT
+        builder.addNetworkInterceptor(new Interceptor() {
+            @NotNull
+            @Override
+            public Response intercept(@NotNull Chain chain) throws IOException {
+                Request request = chain.request().newBuilder()
+                        .addHeader("Authorization", sharedPrefManager.getSpToken())
+                        // .addHeader(Constant.Header, authToken)
+                        .build();
+                return chain.proceed(request);
+            }
+        });
+
         client = builder.build();
         if (retrofit == null) {
             retrofit = new Retrofit.Builder()

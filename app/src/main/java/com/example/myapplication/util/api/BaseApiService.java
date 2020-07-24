@@ -111,6 +111,10 @@ public interface BaseApiService {
                                        @Query("numberRecord") Number numberRecord,
                                        @Query("status") String status);
     @GET("get_event_inf")
+    Call<com.example.myapplication.model.DetailEvent.Example> get_event_inf_web(
+            @Query("eventId") String eventId);
+//    get_event_info_app
+    @GET("get_event_info_app")
     Call<com.example.myapplication.model.DetailEvent.Example> get_event_inf(
             @Query("eventId") String eventId);
 

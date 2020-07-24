@@ -2,17 +2,9 @@ package com.example.myapplication.activity;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-
-
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-
-import android.os.Bundle;
 import com.example.myapplication.R;
 import com.example.myapplication.model.DetailProfile;
 import com.example.myapplication.model.Profile;
-import com.example.myapplication.util.ProgressDialog;
 import com.example.myapplication.util.SharedPrefManager;
 import com.example.myapplication.util.Validate;
 import com.example.myapplication.util.api.BaseApiService;
@@ -22,9 +14,13 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
+
 import com.google.android.gms.tasks.Task;
+import com.google.gson.JsonObject;
 
-
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -116,11 +112,11 @@ public class Login extends AppCompatActivity {
                 startActivity(forgetPassword);
             }
         });
-        if (sharedPrefManager.getSPLogin()){
-            Intent home = new Intent(mContext, HomeActivity.class);
-            startActivity(home);
-            finish();
-        }
+//        if (sharedPrefManager.getSPLogin()){
+//            Intent home = new Intent(mContext, HomeActivity.class);
+//            startActivity(home);
+//            finish();
+//        }
     }
     @Override
     protected void onStart() {
@@ -168,13 +164,13 @@ public class Login extends AppCompatActivity {
                     {
                         try {
                             JSONObject jsonRESULTS = new JSONObject(response.body().string());
+                            JSONObject accessToken = null;
+                            accessToken = jsonRESULTS.getJSONObject("result").getJSONObject("accessToken");
                             Toast.makeText(mContext, "Logined", Toast.LENGTH_SHORT).show();
                             sharedPrefManager.saveSPObjectUser(SharedPrefManager.SP_OBJUSER, jsonRESULTS.getJSONObject("result"));
                             sharedPrefManager.saveSPString(SharedPrefManager.SP_IDUSER,sharedPrefManager.getSPObjectUser().getString("_id") );
+                            sharedPrefManager.saveSPString(SharedPrefManager.SP_TOKEN, accessToken.getString("token") );
                             sharedPrefManager.saveSPBoolean(SharedPrefManager.SP_LOGIN, true);
-                            Log.e("debug", "onFailure: sharepreferences > " + sharedPrefManager.getSPLogin() );
-                            Log.e("debug", "onFailure: id is  > " + sharedPrefManager.getSPObjectUser().getString("_id"));
-
                             startActivity(new Intent(mContext, HomeActivity.class));
                             finish();
                         } catch (JSONException e) {
@@ -213,12 +209,17 @@ public class Login extends AppCompatActivity {
                         if (response.isSuccessful()){
                             try {
                                 JSONObject jsonRESULTS = new JSONObject(response.body().string());
+                                JSONObject accessToken = null;
+                                accessToken = jsonRESULTS.getJSONObject("result").getJSONObject("accessToken");
+
                                 Toast.makeText(mContext, "Logined", Toast.LENGTH_SHORT).show();
                                 sharedPrefManager.saveSPObjectUser(SharedPrefManager.SP_OBJUSER, jsonRESULTS.getJSONObject("result"));
                                 sharedPrefManager.saveSPString(SharedPrefManager.SP_IDUSER,sharedPrefManager.getSPObjectUser().getString("_id") );
+                                sharedPrefManager.saveSPString(SharedPrefManager.SP_TOKEN, accessToken.getString("token") );
                                 sharedPrefManager.saveSPBoolean(SharedPrefManager.SP_LOGIN, true);
+                                Log.e("debug", "token phi save> " + sharedPrefManager.getSpToken());
                                 Log.e("debug", "onFailure: sharepreferences > " + sharedPrefManager.getSPLogin() );
-                                Log.e("debug", "onFailure: id is  > " + sharedPrefManager.getSPObjectUser().getString("_id"));
+                                Log.e("debug", "onFailure: id is> " + sharedPrefManager.getSPObjectUser().getString("_id"));
 
                                 startActivity(new Intent(mContext, HomeActivity.class));
                                 finish();
