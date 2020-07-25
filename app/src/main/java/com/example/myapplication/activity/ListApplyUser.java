@@ -19,6 +19,7 @@ import com.example.myapplication.adapter.ApplyUserAdapter;
 import com.example.myapplication.model.UserJoinEvent.Example;
 import com.example.myapplication.model.UserJoinEvent.Result;
 import com.example.myapplication.util.Constants;
+import com.example.myapplication.util.SharedPrefManager;
 import com.example.myapplication.util.api.BaseApiService;
 import com.example.myapplication.util.api.UtilsApi;
 
@@ -39,9 +40,11 @@ public class ListApplyUser extends AppCompatActivity {
     @BindView(R.id.toolbar_back) TextView toolbar_back;
     @BindView(R.id.toolbar_title) TextView toolbar_title;
     String eventId, sessionId;
+//            String typeTab;
+    String organizerId, userId;
     Context mContext;
     BaseApiService mApiService;
-
+    SharedPrefManager sharedPrefManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +54,8 @@ public class ListApplyUser extends AppCompatActivity {
         ButterKnife.bind(this);
         mContext = this;
         mApiService = UtilsApi.getAPIService(mContext);
+        sharedPrefManager= new SharedPrefManager(this);
+        userId = sharedPrefManager.getSpIduser();
 
         toolbar_title.setText("List apply user");
         toolbar_back.setOnClickListener(new View.OnClickListener() {
@@ -63,7 +68,9 @@ public class ListApplyUser extends AppCompatActivity {
         Intent myIntent = getIntent();
         eventId = myIntent.getStringExtra(Constants.KEY_EVENTID);
         sessionId = myIntent.getStringExtra(Constants.KEY_SESSIONID);
+        organizerId = myIntent.getStringExtra(Constants.KEY_ORGANIZERID);
 
+//        typeTab = myIntent.getStringExtra(Constants.KEY_STATUS);
         rvListApplyUser.setLayoutManager(new LinearLayoutManager(this));
         rvListApplyUser.setItemAnimator(new DefaultItemAnimator());
 
@@ -76,15 +83,15 @@ public class ListApplyUser extends AppCompatActivity {
     }
 
     private void getListApplyUser(){
-        mApiService.get_user_join_event(eventId,sessionId, 1).enqueue(new Callback<Example>() {
+        mApiService.get_user_join_event(eventId, sessionId, 1).enqueue(new Callback<Example>() {
             @Override
             public void onResponse(Call<Example> call, Response<Example> response) {
                 if (response.isSuccessful()){
                     List<Result> listApplyUser = response.body().getResult();
-                    rvListApplyUser.setAdapter(new ApplyUserAdapter(mContext, listApplyUser, new ApplyUserAdapter.ApplyAdapteListenner() {
+                    rvListApplyUser.setAdapter(new ApplyUserAdapter(mContext, organizerId, userId, listApplyUser, new ApplyUserAdapter.ApplyAdapteListenner() {
+
                         @Override
                         public void rejectButtonOnClick(View v, int position) {
-
                             rejectApplyUser(listApplyUser.get(position).getId(),eventId, sessionId);
                         }
 
@@ -120,11 +127,13 @@ public class ListApplyUser extends AppCompatActivity {
                                     Toast.makeText(mContext, "Rejected successfully", Toast.LENGTH_LONG).show();
                                 }
                                 else {
-                                    try {
-                                        JSONObject jsonError = new JSONObject(response.errorBody().string());
-                                        Toast.makeText(mContext, jsonError.getJSONObject("error").getString("message"), Toast.LENGTH_LONG).show();
-                                    } catch (Exception e) {
-                                        Toast.makeText(mContext, e.getMessage(), Toast.LENGTH_LONG).show();
+                                    if (response.code()==600){
+                                        try {
+                                            JSONObject jsonError = new JSONObject(response.errorBody().string());
+                                            Toast.makeText(mContext, jsonError.getJSONObject("error").getString("message"), Toast.LENGTH_LONG).show();
+                                        } catch (Exception e) {
+                                            Toast.makeText(mContext, e.getMessage(), Toast.LENGTH_LONG).show();
+                                        }
                                     }
                                 }
                             }

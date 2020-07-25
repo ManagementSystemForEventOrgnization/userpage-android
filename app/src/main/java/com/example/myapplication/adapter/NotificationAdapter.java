@@ -32,9 +32,11 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private final int VIEW_TYPE_LOADING = 1;
     Context mContext;
     List<Result> notificationItemList;
-    public NotificationAdapter(Context context, List<Result> notificationList) {
+    public MyAdapterListener onClickListener;
+    public NotificationAdapter(Context context, List<Result> notificationList, MyAdapterListener listener) {
         this.mContext = context;
         notificationItemList = notificationList;
+        onClickListener = listener;
     }
 
     @NonNull
@@ -85,6 +87,14 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             ButterKnife.bind(this, itemView);
             viewBackground = itemView.findViewById(R.id.view_background);
             viewForeground = itemView.findViewById(R.id.view_foreground);
+
+            view_item_notification.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    viewForeground.setBackgroundColor(Color.parseColor("#111111"));
+                    onClickListener.onclickItemNotification(v, getAdapterPosition());
+                }
+            });
         }
     }
     public class LoadingViewHolder extends RecyclerView.ViewHolder {
@@ -160,6 +170,9 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         holder.txt_notification.setText(notiContent);
         holder.txt_time.setText(time);
 
+    }
+    public interface MyAdapterListener {
+        void onclickItemNotification(View v, int position);
     }
 
 }

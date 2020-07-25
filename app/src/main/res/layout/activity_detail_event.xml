@@ -39,13 +39,7 @@
             android:layout_height="wrap_content"
             android:drawableStart="@mipmap/icons_back"
             android:padding="10dp"/>
-        <TextView
-            android:id="@+id/btn_scanQr"
-            android:layout_alignRight="@+id/img_banner"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:drawableEnd="@mipmap/icons_qrcode"
-            android:padding="10dp" />
+
     </RelativeLayout>
 
     <LinearLayout

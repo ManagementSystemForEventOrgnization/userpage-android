@@ -38,6 +38,7 @@
         android:textColor="@color/white"
         android:textAllCaps="false"
         android:padding="5dp"
+        android:visibility="gone"
         android:text="Reject"/>
     </LinearLayout>
     <View

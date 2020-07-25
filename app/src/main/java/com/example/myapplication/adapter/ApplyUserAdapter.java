@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.R;
 import com.example.myapplication.model.UserJoinEvent.Result;
+import com.example.myapplication.util.SharedPrefManager;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -22,13 +23,18 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class ApplyUserAdapter extends RecyclerView.Adapter <ApplyUserAdapter.MyView>{
     Context mContext;
     List<Result> userJoinEvent ;
+//    String typeTab;
+    String organizer ="org";
+    String user = "user";
     public ApplyAdapteListenner onClickListener;
 
-    public ApplyUserAdapter(Context context, List<Result> verticalList,ApplyAdapteListenner listenner )
+    public ApplyUserAdapter(Context context, String organizer, String userId, List<Result> verticalList,ApplyAdapteListenner listenner )
     {
         this.mContext = context;
         this.userJoinEvent = verticalList;
         this.onClickListener = listenner;
+        this.organizer = organizer;
+        this.user = userId;
     }
     @Override
     public ApplyUserAdapter.MyView onCreateViewHolder(ViewGroup parent, int viewType)
@@ -70,12 +76,17 @@ public class ApplyUserAdapter extends RecyclerView.Adapter <ApplyUserAdapter.MyV
         {
             super(view);
             ButterKnife.bind(this, view);
-            btn_reject_user_apply.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onClickListener.rejectButtonOnClick(v, getAdapterPosition());
-                }
-            });
+//            edit typetab
+//            if (typeTab.equals("SELF")){
+            if (organizer.equals(user)){
+                btn_reject_user_apply.setVisibility(View.VISIBLE);
+                btn_reject_user_apply.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        onClickListener.rejectButtonOnClick(v, getAdapterPosition());
+                    }
+                });
+            }
             img_user_apply.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

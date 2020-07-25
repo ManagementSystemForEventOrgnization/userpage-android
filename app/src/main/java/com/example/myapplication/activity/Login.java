@@ -112,11 +112,6 @@ public class Login extends AppCompatActivity {
                 startActivity(forgetPassword);
             }
         });
-//        if (sharedPrefManager.getSPLogin()){
-//            Intent home = new Intent(mContext, HomeActivity.class);
-//            startActivity(home);
-//            finish();
-//        }
     }
     @Override
     protected void onStart() {
@@ -229,12 +224,16 @@ public class Login extends AppCompatActivity {
                                 e.printStackTrace();
                             }
                         } else {
-                            try {
-                                JSONObject jsonError = new JSONObject(response.errorBody().string());
-                                Log.e("debug", "onFailure: ERROR 600 > " + jsonError.getJSONObject("error").getString("message") );
-                                Toast.makeText(mContext, jsonError.getJSONObject("error").getString("message"), Toast.LENGTH_LONG).show();
-                            } catch (Exception e) {
-                                Toast.makeText(mContext, e.getMessage(), Toast.LENGTH_LONG).show();
+                            if (response.code()==600){
+                                JSONObject jsonError = null;
+                                try {
+                                    jsonError = new JSONObject(response.errorBody().string());
+                                    Toast.makeText(mContext, jsonError.getJSONObject("error").getString("message"), Toast.LENGTH_LONG).show();
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
                             }
                         }
                     }

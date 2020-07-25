@@ -30,7 +30,7 @@ import retrofit2.Response;
 public class ScanQRCode extends AppCompatActivity {
     @BindView(R.id.scanner_view) CodeScannerView scannerView;
     private CodeScanner mCodeScanner;
-    String qrcode, eventId,sessionId;
+    String qrcode, eventId, sessionId;
     Context mContext;
     BaseApiService mApiService;
     @Override

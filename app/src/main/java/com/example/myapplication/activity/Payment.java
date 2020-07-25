@@ -137,7 +137,7 @@ public class Payment extends AppCompatActivity {
                             String id = items.getId();
                             Intent detailPayment = new Intent(mContext, DetailPayment.class);
                             detailPayment.putExtra(Constants.KEY_PAYMENTID,id);
-                            detailPayment.putExtra(Constants.KEY_USERID, myUserId);
+//                            detailPayment.putExtra(Constants.KEY_USERID, myUserId);
                             startActivity(detailPayment);
                         }
                     }));

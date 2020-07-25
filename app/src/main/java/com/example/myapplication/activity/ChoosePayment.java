@@ -64,7 +64,6 @@ public class ChoosePayment extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 onBackPressed();
-
             }
         });
     }

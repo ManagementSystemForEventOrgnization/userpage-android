@@ -26,7 +26,10 @@ import com.stripe.android.view.CardMultilineWidget;
 
 
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.Objects;
 
 import butterknife.BindView;
@@ -38,7 +41,6 @@ import retrofit2.Response;
 
 public class AddCard extends AppCompatActivity {
     @BindView(R.id.card_multiline_widget) CardMultilineWidget mCardMultilineWidget;
-//    @BindView(R.id.btn_saveCard) Button btn_saveCard;
     @BindView(R.id.toolbar_back) TextView toolbar_back;
     @BindView(R.id.toolbar_title) TextView toolbar_title;
     @BindView(R.id.toolbar_right) TextView btn_saveCard;
@@ -101,6 +103,17 @@ public class AddCard extends AppCompatActivity {
                         if(response.isSuccessful())
                         {
                             Toast.makeText(getApplicationContext(),"Added card successfully", Toast.LENGTH_LONG).show();
+                        }
+                        else{
+                            if (response.code()==600) {
+                                JSONObject jsonError = null;
+                                try {
+                                    jsonError = new JSONObject(response.errorBody().string());
+                                    Toast.makeText(mContext, jsonError.getJSONObject("error").getString("message"), Toast.LENGTH_LONG).show();
+                                } catch (JSONException | IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
                         }
                     }
                     @Override
