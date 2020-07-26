@@ -3,9 +3,12 @@ package com.example.myapplication.activity;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -13,12 +16,15 @@ import com.budiyev.android.codescanner.CodeScanner;
 import com.budiyev.android.codescanner.CodeScannerView;
 import com.budiyev.android.codescanner.DecodeCallback;
 import com.example.myapplication.R;
+import com.example.myapplication.model.VerifyJoinEvent;
 import com.example.myapplication.util.Constants;
 import com.example.myapplication.util.api.BaseApiService;
 import com.example.myapplication.util.api.UtilsApi;
 import com.google.zxing.Result;
 
 import org.json.JSONObject;
+
+import java.lang.reflect.Type;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -30,7 +36,7 @@ import retrofit2.Response;
 public class ScanQRCode extends AppCompatActivity {
     @BindView(R.id.scanner_view) CodeScannerView scannerView;
     private CodeScanner mCodeScanner;
-    String qrcode, eventId, sessionId;
+    String  eventId, sessionId;
     Context mContext;
     BaseApiService mApiService;
     @Override
@@ -54,9 +60,8 @@ public class ScanQRCode extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        qrcode = result.getText();
-                        Toast.makeText(mContext, result.getText(), Toast.LENGTH_SHORT).show();
-                        verifyEventMember();
+//                        strQrCode = result.getText();
+                        verifyEventMember(result.getText());
                     }
                 });
             }
@@ -79,17 +84,38 @@ public class ScanQRCode extends AppCompatActivity {
         mCodeScanner.releaseResources();
         super.onPause();
     }
-    private void verifyEventMember(){
-        mApiService.verifyEventMemberUpdate(qrcode,eventId,sessionId).enqueue(new Callback<ResponseBody>() {
+    private void verifyEventMember( String strQrCode){
+        VerifyJoinEvent verifyJoinEvent = new VerifyJoinEvent(strQrCode, eventId, sessionId);
+        mApiService.verifyEventMemberUpdate(verifyJoinEvent).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.isSuccessful()){
-                    Toast.makeText(mContext, "Verify successfully", Toast.LENGTH_SHORT).show();
+                if (response.isSuccessful())
+                {
+                    android.app.AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                    builder.setMessage("Verified successfully!");
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    });
+                    AlertDialog alert = builder.create();
+                    alert.show();
                 }
-                else {
+                else
+                {
                     try {
                         JSONObject jsonError = new JSONObject(response.errorBody().string());
-                        Toast.makeText(mContext, jsonError.getJSONObject("error").getString("message"), Toast.LENGTH_LONG).show();
+                        android.app.AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                        builder.setMessage(jsonError.getJSONObject("error").getString("message"));
+                        builder.setPositiveButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        });
+                        AlertDialog alert = builder.create();
+                        alert.show();
                     } catch (Exception e) {
                         Toast.makeText(mContext, e.getMessage(), Toast.LENGTH_LONG).show();
                     }

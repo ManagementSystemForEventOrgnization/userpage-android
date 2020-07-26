@@ -398,6 +398,14 @@ public class DetailEvent extends AppCompatActivity implements OnMapReadyCallback
 //                Integer.parseInt(sessionDate)>=Integer.parseInt(currentDate)))
 //            {
 
+//        count time before start session
+        long sessionTime, diff, diffHours;
+        long currentTime = date.getTime();
+        sessionTime = sessionItem.getDay().getTime();
+        diff = sessionTime - currentTime;
+        diffHours = diff/(60 * 60 * 1000);
+//        diffHours = diff/(60 * 60 * 1000) % 24;
+
         if ( !event.getUserId().equals(myUserId)  &&
                 Integer.parseInt(sessionDate)>=Integer.parseInt(currentDate))
             {
@@ -407,22 +415,23 @@ public class DetailEvent extends AppCompatActivity implements OnMapReadyCallback
                     btn_cancelEvent.setVisibility(View.GONE);
                     btn_applyEvent.setVisibility(View.GONE);
                 }
-                else if(statusSession.equals("JOINED")){
+                else if(statusSession.equals("JOINED") ){
 
                     btn_cancelEvent.setVisibility(View.VISIBLE);
                     btn_applyEvent.setVisibility(View.GONE);
 //                    check time before start event session
-                    btn_scanQrcode.setVisibility(View.VISIBLE);
-                    btn_scanQrcode.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Intent intent = new Intent(mContext, ScanQRCode.class);
-                            intent.putExtra(Constants.KEY_EVENTID, eventId);
-                            intent.putExtra(Constants.KEY_SESSIONID, sessionItem.getIdSession());
-                            startActivity(intent);
-                        }
-                    });
-
+                    if (diffHours <=4){
+                        btn_scanQrcode.setVisibility(View.VISIBLE);
+                        btn_scanQrcode.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent = new Intent(mContext, ScanQRCode.class);
+                                intent.putExtra(Constants.KEY_EVENTID, event.getId());
+                                intent.putExtra(Constants.KEY_SESSIONID, sessionItem.getIdSession());
+                                startActivity(intent);
+                            }
+                        });
+                    }
                 }
                 else {
                     btn_applyEvent.setVisibility(View.VISIBLE);

@@ -20,11 +20,14 @@ import com.google.gson.JsonObject;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -49,6 +52,8 @@ public class Login extends AppCompatActivity {
     @BindView(R.id.txt_forgetPassword) TextView txt_forgetPassword;
     @BindView(R.id.txt_createAccount) TextView txt_createAccount;
     @BindView(R.id.txt_loginGoogle) TextView txt_loginGoogle;
+    @BindView(R.id.progressBarLarge) ProgressBar progressBarLarge;
+    @BindView(R.id.itemLogin) LinearLayout itemLogin;
 
     Context mContext;
     BaseApiService mApiService;
@@ -197,6 +202,8 @@ public class Login extends AppCompatActivity {
     }
 
     private void login(){
+        progressBarLarge.getIndeterminateDrawable().setColorFilter(Color.WHITE,android.graphics.PorterDuff.Mode.MULTIPLY );
+        progressBarLarge.setVisibility(View.VISIBLE);
         mApiService.loginRequest(input_email.getText().toString(), input_password.getText().toString())
                 .enqueue(new Callback<ResponseBody>() {
                     @Override
@@ -207,20 +214,15 @@ public class Login extends AppCompatActivity {
                                 JSONObject accessToken = null;
                                 accessToken = jsonRESULTS.getJSONObject("result").getJSONObject("accessToken");
 
-                                Toast.makeText(mContext, "Logined", Toast.LENGTH_SHORT).show();
+//                                Toast.makeText(mContext, "Logined", Toast.LENGTH_SHORT).show();
                                 sharedPrefManager.saveSPObjectUser(SharedPrefManager.SP_OBJUSER, jsonRESULTS.getJSONObject("result"));
                                 sharedPrefManager.saveSPString(SharedPrefManager.SP_IDUSER,sharedPrefManager.getSPObjectUser().getString("_id") );
                                 sharedPrefManager.saveSPString(SharedPrefManager.SP_TOKEN, accessToken.getString("token") );
                                 sharedPrefManager.saveSPBoolean(SharedPrefManager.SP_LOGIN, true);
-                                Log.e("debug", "token phi save> " + sharedPrefManager.getSpToken());
-                                Log.e("debug", "onFailure: sharepreferences > " + sharedPrefManager.getSPLogin() );
-                                Log.e("debug", "onFailure: id is> " + sharedPrefManager.getSPObjectUser().getString("_id"));
 
                                 startActivity(new Intent(mContext, HomeActivity.class));
                                 finish();
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            } catch (IOException e) {
+                            } catch (JSONException | IOException e) {
                                 e.printStackTrace();
                             }
                         } else {

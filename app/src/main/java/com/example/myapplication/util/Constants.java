@@ -19,4 +19,6 @@ public class Constants {
     public static String KEY_PAYMENTID = "keyPaymentId";
     public static String KEY_COOKIES = "keyCookies";
     public static String KEY_ORGANIZERID = "keyOrganizer";
+    public static String KEY_EARNMONEYID = "keyEarnMoney";
+
 }

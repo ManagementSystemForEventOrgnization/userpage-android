@@ -12,8 +12,13 @@ import com.example.myapplication.R;
 import com.example.myapplication.model.Comment.Result;
 import com.squareup.picasso.Picasso;
 
+import org.intellij.lang.annotations.Language;
+import org.ocpsoft.prettytime.PrettyTime;
+
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -22,7 +27,12 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentHolder> {
     Context mContext;
     List<Result> listComment;
+//    format date & time
     SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+    PrettyTime p = new PrettyTime(Locale.ENGLISH);
+    Date date = new Date();
+    long diff, diffHours;
+    long currentTime = date.getTime();
 
     public CommentAdapter(Context context, List<Result> verticalList)
     {
@@ -49,8 +59,17 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentH
             Picasso.get().load(commentItem.getUsersComment().getAvatar()).into(holder.avatar_user);
             holder.txt_userName.setText(commentItem.getUsersComment().getFullName());
             holder.txt_contentComment.setText(commentItem.getContent());
-            String time = dateFormat.format(commentItem.getCreatedAt());
-            holder.txt_timeMyComment.setText(time);
+            long commentTime = commentItem.getCreatedAt().getTime();
+            diff = currentTime - commentTime;
+            diffHours = diff/(60 * 60 * 1000);
+            if (diffHours<24)
+            {
+                holder.txt_timeMyComment.setText(p.format(commentItem.getCreatedAt()));
+            }
+            else
+            {
+                holder.txt_timeMyComment.setText(dateFormat.format(commentItem.getCreatedAt()));
+            }
         }
 
     }

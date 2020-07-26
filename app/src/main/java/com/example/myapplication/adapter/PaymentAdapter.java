@@ -17,7 +17,10 @@ import com.squareup.picasso.Picasso;
 
 import org.ocpsoft.prettytime.PrettyTime;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -28,6 +31,13 @@ public class PaymentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     String myUserId;
     private static int TYPE_PAYMENT = 1;
     private static int TYPE_REFUND = 2;
+
+//    format date&time
+    SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+    PrettyTime p = new PrettyTime(Locale.ENGLISH);
+    Date date = new Date();
+    long diff, diffHours;
+    long currentTime = date.getTime();
 
 
     public PaymentAdapter(Context context, List<Result> listVertical, String userId) {
@@ -52,7 +62,6 @@ public class PaymentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     class PaymentViewHolder extends RecyclerView.ViewHolder {
-        PrettyTime p = new PrettyTime();
         @BindView(R.id.txt_senderName) TextView txt_senderName;
         @BindView(R.id.txt_amountPayment) TextView txt_amountPayment;
         @BindView(R.id.txt_contentPayment) TextView txt_contentPayment;
@@ -72,7 +81,20 @@ public class PaymentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             senderName = paymentDetails.getSender().getFullName();
             receiverName = paymentDetails.getReceiver().getFullName();
             eventName = paymentDetails.getEventId().getName();
-            time = p.format(paymentDetails.getCreatedAt());
+//            time = p.format(paymentDetails.getCreatedAt());
+
+            long paymentTime = paymentDetails.getCreatedAt().getTime();
+            diff = currentTime - paymentTime;
+            diffHours = diff/(60 * 60 * 1000);
+            time = diffHours<24 ? p.format(paymentDetails.getCreatedAt()) : dateFormat.format(paymentDetails.getCreatedAt());
+//            if (diffHours<24)
+//            {
+//                time = p.format(paymentDetails.getCreatedAt());
+//            }
+//            else
+//            {
+//                time = dateFormat.format(paymentDetails.getCreatedAt());
+//            }
 
             for(int i=0; i<paymentDetails.getEventId().getSession().size();i++){
                 if(sessionId.equals(paymentDetails.getEventId().getSession().get(i).getIdSession())){
@@ -106,7 +128,6 @@ public class PaymentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     class RefundViewHolder extends RecyclerView.ViewHolder {
-        PrettyTime p = new PrettyTime();
 
         @BindView(R.id.txt_senderName) TextView txt_senderName;
         @BindView(R.id.txt_amountPayment) TextView txt_amountPayment;
@@ -128,8 +149,20 @@ public class PaymentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             senderName = refundDetails.getSender().getFullName();
             receiverName = refundDetails.getReceiver().getFullName();
             eventName = refundDetails.getEventId().getName();
-            time = p.format(refundDetails.getCreatedAt());
-            timeUpdate = p.format(refundDetails.getUpdatedAt());
+
+//            time = p.format(refundDetails.getCreatedAt());
+//            timeUpdate = p.format(refundDetails.getUpdatedAt());
+
+            long refundTime = refundDetails.getCreatedAt().getTime();
+            long updateTime = refundDetails.getUpdatedAt().getTime();
+            diff = currentTime - refundTime;
+            long diff1 = currentTime - updateTime;
+
+            diffHours = diff/(60 * 60 * 1000);
+            long diffHours1 = diff1/(60 * 60 * 1000);
+
+            time = diffHours<24 ? p.format(refundDetails.getCreatedAt()) : dateFormat.format(refundDetails.getCreatedAt());
+            timeUpdate = diffHours1<24 ? p.format(refundDetails.getUpdatedAt()) : dateFormat.format(refundDetails.getUpdatedAt());
 
             for(int i=0; i<refundDetails.getEventId().getSession().size();i++){
                 if(sessionId.equals(refundDetails.getEventId().getSession().get(i).getIdSession())){

@@ -40,14 +40,11 @@ import retrofit2.Response;
 
 public class Payment extends AppCompatActivity {
     @BindView(R.id.rvPayments) RecyclerView rvPayments;
-    @BindView(R.id.txt_amountRevenue) TextView txt_amountRevenue;
     @BindView(R.id.txt_amountExpenditure) TextView txt_amountExpenditure;
     @BindView(R.id.toolbar_back) TextView toolbar_back;
     @BindView(R.id.toolbar_title) TextView toolbar_title;
 
     String myUserId;
-//    doanh thu (green)
-    int totalRevenue = 0;
 //    chi phi (red)
     int totalExpenditure = 0;
     Context mContext;
@@ -93,13 +90,9 @@ public class Payment extends AppCompatActivity {
                     try {
                         JSONObject jsonRESULTS = new JSONObject(response.body().string());
                         totalExpenditure = jsonRESULTS.getJSONObject("result").getInt("expTotal");
-                        totalRevenue = jsonRESULTS.getJSONObject("result").getInt("revenueTotal");
                         txt_amountExpenditure.setText(totalExpenditure + " VND");
-                        txt_amountRevenue.setText(totalRevenue + " VND");
 
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
+                    } catch (JSONException | IOException e) {
                         e.printStackTrace();
                     }
                 }

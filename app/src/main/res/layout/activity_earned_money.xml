@@ -4,9 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/black"
     android:fitsSystemWindows="true"
-    tools:context=".activity.Payment">
+    android:background="@color/black"
+    tools:context=".activity.ListCard">
     <include
         layout="@layout/custom_action_bar"
         android:layout_width="match_parent"
@@ -14,13 +14,13 @@
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
-    <ImageView
-        android:id="@+id/img_payment"
-        android:layout_width="match_parent"
-        android:layout_height="120dp"
-        android:adjustViewBounds="true"
-        android:scaleType="centerCrop"
-        android:src="@mipmap/payment"/>
+        <ImageView
+            android:id="@+id/img_payment"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop"
+            android:src="@mipmap/payment"/>
         <View
             android:id="@+id/div_payment"
             android:layout_width="250dp"
@@ -36,30 +36,32 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_alignTop="@+id/img_payment"
-            android:text="Expenditure Total"
+            android:text="Total"
             android:layout_marginTop="20dp"
             android:textColor="@color/white"
             android:textSize="20sp"
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/txt_amountExpenditure"
+            android:id="@+id/txt_amountRevenue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_below="@+id/txt_expenditureTotal"
             android:text=""
-            android:textColor="@color/red"
+            android:textColor="@color/green"
             android:textSize="25sp"
             android:textStyle="bold" />
 
     </RelativeLayout>
+
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvPayments"
+            android:id="@+id/rvSessionMoney"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
     </LinearLayout>

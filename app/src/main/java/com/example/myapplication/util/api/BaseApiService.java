@@ -9,6 +9,7 @@ import com.example.myapplication.model.Chat.Result;
 import com.example.myapplication.model.ListEvent.Example;
 import com.example.myapplication.model.Notification.BadgeNumber;
 import com.example.myapplication.model.Profile;
+import com.example.myapplication.model.VerifyJoinEvent;
 
 
 import java.util.Date;
@@ -151,11 +152,8 @@ public interface BaseApiService {
                                          @Field("eventId") String eventId,
                                          @Field("sessionId") String sessionId);
 //    verify event member update
-    @FormUrlEncoded
     @POST ("verifyEventMember")
-    Call<ResponseBody> verifyEventMemberUpdate (    @Field("qrcode") String qrcode,
-                                                    @Field("eventId") String eventId,
-                                                    @Field("sessionId ") String sessionId );
+    Call<ResponseBody> verifyEventMemberUpdate (@Body VerifyJoinEvent verifyJoinEvent);
 
 // payment
     @FormUrlEncoded
@@ -221,4 +219,11 @@ public interface BaseApiService {
                                  @Field("receiver") String receiver,
                                  @Field("fullName") String fullName,
                                  @Field("content") String content);
+//    get list earn money
+    @GET("user/report_revenus")
+    Call<com.example.myapplication.model.EarnedMoney.Example> getReportRevenus (@Query("startDate") Date startDate,
+                                                                                @Query("endDate") Date endDate,
+                                                                                @Query("eventId") String eventId);
+    @GET("user/report_revenus")
+    Call<com.example.myapplication.model.EarnedMoney.Example> getListRevenus ();
 }
