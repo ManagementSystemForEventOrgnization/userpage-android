@@ -5,7 +5,7 @@ import android.net.Uri;
 import com.example.myapplication.model.ApplyEvent;
 import com.example.myapplication.model.BaseResult;
 import com.example.myapplication.model.BaseUser;
-import com.example.myapplication.model.Chat.Result;
+import com.example.myapplication.model.EarnedMoney.Result;
 import com.example.myapplication.model.ListEvent.Example;
 import com.example.myapplication.model.Notification.BadgeNumber;
 import com.example.myapplication.model.Profile;
@@ -221,9 +221,16 @@ public interface BaseApiService {
                                  @Field("content") String content);
 //    get list earn money
     @GET("user/report_revenus")
-    Call<com.example.myapplication.model.EarnedMoney.Example> getReportRevenus (@Query("startDate") Date startDate,
-                                                                                @Query("endDate") Date endDate,
-                                                                                @Query("eventId") String eventId);
+    Call<com.example.myapplication.model.EarnedMoney.Example> getReportRevenus (
+            @Query("startDate") Date startDate,
+            @Query("endDate") Date endDate,
+            @Query("eventId") String eventId);
     @GET("user/report_revenus")
-    Call<com.example.myapplication.model.EarnedMoney.Example> getListRevenus ();
+    Call<com.example.myapplication.model.EarnedMoney.Example> getListRevenus (@Query("startDate") Date startDate,
+                                                                              @Query("endDate") Date endDate);
+    @GET("user/list_payment_session")
+    Call<com.example.myapplication.model.ListPaymentSession.Example> getListPaymentSession
+            (@Query("eventId") String eventId,
+             @Query("sessionId") String sessionId,
+             @Query("pageNumber") Integer pageNumber);
 }

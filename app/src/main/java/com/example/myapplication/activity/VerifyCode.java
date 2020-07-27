@@ -80,7 +80,7 @@ public class VerifyCode extends AppCompatActivity {
                 if(response.isSuccessful())
                 {
                     Toast.makeText(mContext, "Verified successfully", Toast.LENGTH_LONG).show();
-                    startActivity(new Intent(mContext, MainActivity.class));
+                    startActivity(new Intent(mContext, Login.class));
                 }
                 else
                 {

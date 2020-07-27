@@ -85,7 +85,7 @@ public class LastForgetPassword extends AppCompatActivity {
                         if(response.code()==200)
                         {
                             Toast.makeText(mContext, "Created new password successfully", Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(mContext, MainActivity.class));
+                            startActivity(new Intent(mContext, Login.class));
                         }
                         else {
                             try {

@@ -20,5 +20,8 @@ public class Constants {
     public static String KEY_COOKIES = "keyCookies";
     public static String KEY_ORGANIZERID = "keyOrganizer";
     public static String KEY_EARNMONEYID = "keyEarnMoney";
+    public static String KEY_STARTDATE = "keyStartDate";
+    public static String KEY_ENDDATE = "keyEndDate";
+
 
 }

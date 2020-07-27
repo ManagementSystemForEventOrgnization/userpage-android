@@ -85,9 +85,7 @@ public class Register extends AppCompatActivity {
                                 myIntent.putExtra(Constants.KEY_EMAIL, input_email.getText().toString());
                                 startActivity(myIntent);
 
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            } catch (IOException e) {
+                            } catch (JSONException | IOException e) {
                                 e.printStackTrace();
                             }
                         } else {

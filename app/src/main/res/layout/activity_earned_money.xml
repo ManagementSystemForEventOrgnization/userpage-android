@@ -5,8 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:fitsSystemWindows="true"
-    android:background="@color/black"
-    tools:context=".activity.ListCard">
+    android:background="@color/black">
     <include
         layout="@layout/custom_action_bar"
         android:layout_width="match_parent"
@@ -17,7 +16,7 @@
         <ImageView
             android:id="@+id/img_payment"
             android:layout_width="match_parent"
-            android:layout_height="120dp"
+            android:layout_height="200dp"
             android:adjustViewBounds="true"
             android:scaleType="centerCrop"
             android:src="@mipmap/payment"/>
@@ -25,9 +24,7 @@
             android:id="@+id/div_payment"
             android:layout_width="250dp"
             android:layout_height="1dp"
-            android:layout_alignBottom="@id/img_payment"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="30dp"
+            android:layout_centerInParent="true"
             android:background="@color/white"/>
 
         <TextView
@@ -52,18 +49,41 @@
             android:textColor="@color/green"
             android:textSize="25sp"
             android:textStyle="bold" />
+        <EditText
+            android:id="@+id/startDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawableRight="@mipmap/icons_calendar"
+            android:layout_above="@+id/endDate"
+            android:layout_marginRight="20dp"
+            android:textColor="@color/white"
+            android:hint="Start Date"
+            android:textColorHint="@color/white"
+            android:layout_marginLeft="20dp"/>
+        <EditText
+            android:id="@+id/endDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:layout_alignBottom="@id/img_payment"
+            android:drawableRight="@mipmap/icons_calendar"
+            android:hint="End Date"
+            android:textColor="@color/white"
+            android:textColorHint="@color/white"
+            android:layout_marginRight="20dp"
+            android:layout_marginLeft="20dp"/>
 
     </RelativeLayout>
-
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvSessionMoney"
+            android:id="@+id/rvEarnMoney"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
     </LinearLayout>
+
 
 </LinearLayout>
