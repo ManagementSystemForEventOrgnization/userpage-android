@@ -1,5 +1,6 @@
 package com.example.myapplication.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
@@ -33,11 +34,27 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.MyView> {
         // return itemView
         return new MyView(itemView);
     }
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(FileAdapter.MyView holder, int position)
     {
         final Document documentItem = documentSession.get(position);
-        holder.txt_file.setText(documentItem.getUrl());
+        if(documentItem.getUpload()!=null)
+        {
+            if(documentItem.getUpload())
+            {
+                holder.txt_file.setText("https://event-orgnization.herokuapp.com/api"+ documentItem.getUrl());
+
+            }
+            else
+            {
+                holder.txt_file.setText(documentItem.getUrl());
+            }
+        }
+        else
+        {
+            holder.txt_file.setText(documentItem.getUrl());
+        }
     }
     public int getItemCount()
     {

@@ -11,6 +11,10 @@ public class LinkTo {
     @Expose
     private String id;
 
+    @SerializedName("urlWeb")
+    @Expose
+    private String urlWeb;
+
     public String getKey() {
         return key;
     }
@@ -25,5 +29,13 @@ public class LinkTo {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getUrlWeb() {
+        return urlWeb;
+    }
+
+    public void setUrlWeb(String urlWeb) {
+        this.urlWeb = urlWeb;
     }
 }

@@ -2,17 +2,9 @@ package com.example.myapplication.activity;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-
-
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-
-import android.os.Bundle;
 import com.example.myapplication.R;
 import com.example.myapplication.model.DetailProfile;
 import com.example.myapplication.model.Profile;
-import com.example.myapplication.util.ProgressDialog;
 import com.example.myapplication.util.SharedPrefManager;
 import com.example.myapplication.util.Validate;
 import com.example.myapplication.util.api.BaseApiService;
@@ -22,13 +14,20 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
+
 import com.google.android.gms.tasks.Task;
+import com.google.gson.JsonObject;
 
-
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -53,6 +52,8 @@ public class Login extends AppCompatActivity {
     @BindView(R.id.txt_forgetPassword) TextView txt_forgetPassword;
     @BindView(R.id.txt_createAccount) TextView txt_createAccount;
     @BindView(R.id.txt_loginGoogle) TextView txt_loginGoogle;
+    @BindView(R.id.progressBarLarge) ProgressBar progressBarLarge;
+    @BindView(R.id.itemLogin) LinearLayout itemLogin;
 
     Context mContext;
     BaseApiService mApiService;
@@ -116,11 +117,6 @@ public class Login extends AppCompatActivity {
                 startActivity(forgetPassword);
             }
         });
-        if (sharedPrefManager.getSPLogin()){
-            Intent home = new Intent(mContext, HomeActivity.class);
-            startActivity(home);
-            finish();
-        }
     }
     @Override
     protected void onStart() {
@@ -168,13 +164,13 @@ public class Login extends AppCompatActivity {
                     {
                         try {
                             JSONObject jsonRESULTS = new JSONObject(response.body().string());
+                            JSONObject accessToken = null;
+                            accessToken = jsonRESULTS.getJSONObject("result").getJSONObject("accessToken");
                             Toast.makeText(mContext, "Logined", Toast.LENGTH_SHORT).show();
                             sharedPrefManager.saveSPObjectUser(SharedPrefManager.SP_OBJUSER, jsonRESULTS.getJSONObject("result"));
                             sharedPrefManager.saveSPString(SharedPrefManager.SP_IDUSER,sharedPrefManager.getSPObjectUser().getString("_id") );
+                            sharedPrefManager.saveSPString(SharedPrefManager.SP_TOKEN, accessToken.getString("token") );
                             sharedPrefManager.saveSPBoolean(SharedPrefManager.SP_LOGIN, true);
-                            Log.e("debug", "onFailure: sharepreferences > " + sharedPrefManager.getSPLogin() );
-                            Log.e("debug", "onFailure: id is  > " + sharedPrefManager.getSPObjectUser().getString("_id"));
-
                             startActivity(new Intent(mContext, HomeActivity.class));
                             finish();
                         } catch (JSONException e) {
@@ -206,6 +202,8 @@ public class Login extends AppCompatActivity {
     }
 
     private void login(){
+        progressBarLarge.getIndeterminateDrawable().setColorFilter(Color.WHITE,android.graphics.PorterDuff.Mode.MULTIPLY );
+        progressBarLarge.setVisibility(View.VISIBLE);
         mApiService.loginRequest(input_email.getText().toString(), input_password.getText().toString())
                 .enqueue(new Callback<ResponseBody>() {
                     @Override
@@ -213,27 +211,31 @@ public class Login extends AppCompatActivity {
                         if (response.isSuccessful()){
                             try {
                                 JSONObject jsonRESULTS = new JSONObject(response.body().string());
-                                Toast.makeText(mContext, "Logined", Toast.LENGTH_SHORT).show();
+                                JSONObject accessToken = null;
+                                accessToken = jsonRESULTS.getJSONObject("result").getJSONObject("accessToken");
+
+//                                Toast.makeText(mContext, "Logined", Toast.LENGTH_SHORT).show();
                                 sharedPrefManager.saveSPObjectUser(SharedPrefManager.SP_OBJUSER, jsonRESULTS.getJSONObject("result"));
                                 sharedPrefManager.saveSPString(SharedPrefManager.SP_IDUSER,sharedPrefManager.getSPObjectUser().getString("_id") );
+                                sharedPrefManager.saveSPString(SharedPrefManager.SP_TOKEN, accessToken.getString("token") );
                                 sharedPrefManager.saveSPBoolean(SharedPrefManager.SP_LOGIN, true);
-                                Log.e("debug", "onFailure: sharepreferences > " + sharedPrefManager.getSPLogin() );
-                                Log.e("debug", "onFailure: id is  > " + sharedPrefManager.getSPObjectUser().getString("_id"));
 
                                 startActivity(new Intent(mContext, HomeActivity.class));
                                 finish();
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            } catch (IOException e) {
+                            } catch (JSONException | IOException e) {
                                 e.printStackTrace();
                             }
                         } else {
-                            try {
-                                JSONObject jsonError = new JSONObject(response.errorBody().string());
-                                Log.e("debug", "onFailure: ERROR 600 > " + jsonError.getJSONObject("error").getString("message") );
-                                Toast.makeText(mContext, jsonError.getJSONObject("error").getString("message"), Toast.LENGTH_LONG).show();
-                            } catch (Exception e) {
-                                Toast.makeText(mContext, e.getMessage(), Toast.LENGTH_LONG).show();
+                            if (response.code()==600){
+                                JSONObject jsonError = null;
+                                try {
+                                    jsonError = new JSONObject(response.errorBody().string());
+                                    Toast.makeText(mContext, jsonError.getJSONObject("error").getString("message"), Toast.LENGTH_LONG).show();
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
                             }
                         }
                     }

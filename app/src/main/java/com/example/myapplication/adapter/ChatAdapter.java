@@ -13,8 +13,12 @@ import com.example.myapplication.R;
 import com.example.myapplication.model.Chat.Result;
 
 
+import org.ocpsoft.prettytime.PrettyTime;
+
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -26,6 +30,11 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
     private static int TYPE_MYCHAT = 1;
     private static int TYPE_ADMINCHAT = 2;
     SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+    PrettyTime p = new PrettyTime(Locale.ENGLISH);
+    Date date = new Date();
+    long diff, diffHours;
+    long currentTime = date.getTime();
+
     public ChatAdapter(Context context, List<Result> listVertical, String userId){
         this.mContext = context;
         this.listChat = listVertical;
@@ -55,8 +64,18 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
         }
         public void setMyChatDetail(Result myChatDetail) {
             txt_contentMyChat.setText(myChatDetail.getContent());
-            String time = dateFormat.format(myChatDetail.getCreatedAt());
-             txt_timeMyChat.setText(time);
+            long myChatTime = myChatDetail.getCreatedAt().getTime();
+            diff = currentTime - myChatTime;
+            diffHours = diff/(60 * 60 * 1000);
+            if (diffHours<24)
+            {
+                txt_timeMyChat.setText(p.format(myChatDetail.getCreatedAt()));
+            }
+            else
+            {
+                txt_timeMyChat.setText(dateFormat.format(myChatDetail.getCreatedAt()));
+            }
+
         }
     }
 
@@ -67,10 +86,20 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
-        public void setAdminChatDetail(Result refundDetails) {
-            txt_contentAdminChat.setText(refundDetails.getContent());
-            String time = dateFormat.format(refundDetails.getCreatedAt());
-            txt_timeAdminChat.setText(time);
+        public void setAdminChatDetail(Result adminChatDetail) {
+            txt_contentAdminChat.setText(adminChatDetail.getContent());
+            long adminChatTime = adminChatDetail.getCreatedAt().getTime();
+            diff = currentTime - adminChatTime;
+            diffHours = diff/(60 * 60 * 1000);
+
+            if (diffHours<24)
+            {
+                txt_timeAdminChat.setText(p.format(adminChatDetail.getCreatedAt()));
+            }
+            else
+            {
+                txt_timeAdminChat.setText(dateFormat.format(adminChatDetail.getCreatedAt()));
+            }
         }
     }
     @NonNull

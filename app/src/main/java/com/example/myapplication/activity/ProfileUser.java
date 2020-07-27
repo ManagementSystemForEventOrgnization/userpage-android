@@ -103,12 +103,14 @@ public class ProfileUser extends AppCompatActivity {
                 }
                 else
                 {
-                    try {
-                        JSONObject jsonError = new JSONObject(response.errorBody().string());
-                        Log.e("debug", "onFailure: ERROR 600 > " + jsonError.getJSONObject("error").getString("message") );
-                        Toast.makeText(mContext, jsonError.getJSONObject("error").getString("message"), Toast.LENGTH_LONG).show();
-                    } catch (Exception e) {
-                        Toast.makeText(mContext, e.getMessage(), Toast.LENGTH_LONG).show();
+                    if (response.code()==600){
+                        try {
+                            JSONObject jsonError = new JSONObject(response.errorBody().string());
+                            Log.e("debug", "onFailure: ERROR 600 > " + jsonError.getJSONObject("error").getString("message") );
+                            Toast.makeText(mContext, jsonError.getJSONObject("error").getString("message"), Toast.LENGTH_LONG).show();
+                        } catch (Exception e) {
+                            Toast.makeText(mContext, e.getMessage(), Toast.LENGTH_LONG).show();
+                        }
                     }
                 }
             }

@@ -21,6 +21,7 @@ import com.example.myapplication.R;
 import com.example.myapplication.adapter.NotificationAdapter;
 import com.example.myapplication.model.Notification.Example;
 import com.example.myapplication.model.Notification.Result;
+import com.example.myapplication.util.Constants;
 import com.example.myapplication.util.RecyclerItemTouchHelper;
 import com.example.myapplication.util.SwipeHelper;
 import com.example.myapplication.util.api.BaseApiService;
@@ -68,7 +69,30 @@ public class Notification extends AppCompatActivity  {
         mContext = this;
         mApiService = UtilsApi.getAPIService(mContext);
         notificationList = new ArrayList<>();
-        mAdapter = new NotificationAdapter(mContext, notificationList);
+        mAdapter = new NotificationAdapter(mContext, notificationList, new NotificationAdapter.MyAdapterListener() {
+            @Override
+            public void onclickItemNotification(View v, int position) {
+                if (notificationList.get(position).getLinkTo().getKey().equals("EventDetail")){
+                    Intent detailEvent = new Intent(mContext, DetailEvent.class);
+                    detailEvent.putExtra(Constants.KEY_ID, notificationList.get(position).getLinkTo().getId());
+                    startActivity(detailEvent);
+                }
+                if (notificationList.get(position).getLinkTo().getKey().equals("PaymentInfo")){
+                    Intent detailPayment = new Intent(mContext, DetailPayment.class);
+                    detailPayment.putExtra(Constants.KEY_PAYMENTID, notificationList.get(position).getLinkTo().getId());
+                    startActivity(detailPayment);
+                }
+                mApiService.setReadNotification(notificationList.get(position).getId()).enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    }
+                });
+            }
+        });
 
         rvListNotification.setLayoutManager(new LinearLayoutManager(this));
         rvListNotification.setItemAnimator(new DefaultItemAnimator());
@@ -115,28 +139,30 @@ public class Notification extends AppCompatActivity  {
                         }
                 ));
 
-                underlayButtons.add(new SwipeHelper.UnderlayButton(
-                        "Mark read",
-                        0,
-                        Color.parseColor("#FF9502"),
-                        new SwipeHelper.UnderlayButtonClickListener() {
-                            @Override
-                            public void onClick(int pos) {
-                                mApiService.setReadNotification(notificationId).enqueue(new Callback<ResponseBody>() {
-                                    @Override
-                                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                                        ((NotificationAdapter.NotificationHolder) viewHolder).viewForeground.setBackgroundColor(Color.parseColor("#111111"));
-                                        Toast.makeText(mContext, "Marked successfully!!", Toast.LENGTH_SHORT).show();
-                                    }
+                if (!notificationList.get(viewHolder.getAdapterPosition()).getIsRead()){
+                    underlayButtons.add(new SwipeHelper.UnderlayButton(
+                            "Mark read",
+                            0,
+                            Color.parseColor("#FF9502"),
+                            new SwipeHelper.UnderlayButtonClickListener() {
+                                @Override
+                                public void onClick(int pos) {
+                                    mApiService.setReadNotification(notificationId).enqueue(new Callback<ResponseBody>() {
+                                        @Override
+                                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                                            ((NotificationAdapter.NotificationHolder) viewHolder).viewForeground.setBackgroundColor(Color.parseColor("#111111"));
+                                            Toast.makeText(mContext, "Marked successfully!!", Toast.LENGTH_SHORT).show();
+                                        }
 
-                                    @Override
-                                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                                        @Override
+                                        public void onFailure(Call<ResponseBody> call, Throwable t) {
 
-                                    }
-                                });
+                                        }
+                                    });
+                                }
                             }
-                        }
-                ));
+                    ));
+                }
             }
         };
     }
@@ -159,6 +185,7 @@ public class Notification extends AppCompatActivity  {
                     for(int i=0;i<notificationItems.size();i++){
                         notificationList.add(notificationItems.get(i));
                     }
+
 
 //                    rvListNotification.setAdapter(new NotificationAdapter(mContext, notificationList));
                     mAdapter.notifyDataSetChanged();

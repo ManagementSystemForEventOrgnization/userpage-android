@@ -1,5 +1,7 @@
 package com.example.myapplication.model.ListEvent;
 
+import com.example.myapplication.model.AccessToken;
+import com.example.myapplication.model.Notification.Bank;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -57,6 +59,13 @@ public class User {
     @SerializedName("updatedAt")
     @Expose
     private String updatedAt;
+//    add 22/7
+    @SerializedName("bank")
+    @Expose
+    private Bank bank;
+    @SerializedName("accessToken")
+    @Expose
+    private AccessToken accessToken;
 
     public String getAvatar() {
         return avatar;
@@ -192,5 +201,21 @@ public class User {
 
     public void setUpdatedAt(String updatedAt) {
         this.updatedAt = updatedAt;
+    }
+//    add 22/7
+public Bank getBank() {
+    return bank;
+}
+
+    public void setBank(Bank bank) {
+        this.bank = bank;
+    }
+
+    public AccessToken getAccessToken() {
+        return accessToken;
+    }
+
+    public void setAccessToken(AccessToken accessToken) {
+        this.accessToken = accessToken;
     }
 }

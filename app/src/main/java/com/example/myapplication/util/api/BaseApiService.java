@@ -5,10 +5,11 @@ import android.net.Uri;
 import com.example.myapplication.model.ApplyEvent;
 import com.example.myapplication.model.BaseResult;
 import com.example.myapplication.model.BaseUser;
-import com.example.myapplication.model.Chat.Result;
+import com.example.myapplication.model.EarnedMoney.Result;
 import com.example.myapplication.model.ListEvent.Example;
 import com.example.myapplication.model.Notification.BadgeNumber;
 import com.example.myapplication.model.Profile;
+import com.example.myapplication.model.VerifyJoinEvent;
 
 
 import java.util.Date;
@@ -111,6 +112,10 @@ public interface BaseApiService {
                                        @Query("numberRecord") Number numberRecord,
                                        @Query("status") String status);
     @GET("get_event_inf")
+    Call<com.example.myapplication.model.DetailEvent.Example> get_event_inf_web(
+            @Query("eventId") String eventId);
+//    get_event_info_app
+    @GET("get_event_info_app")
     Call<com.example.myapplication.model.DetailEvent.Example> get_event_inf(
             @Query("eventId") String eventId);
 
@@ -147,11 +152,8 @@ public interface BaseApiService {
                                          @Field("eventId") String eventId,
                                          @Field("sessionId") String sessionId);
 //    verify event member update
-    @FormUrlEncoded
     @POST ("verifyEventMember")
-    Call<ResponseBody> verifyEventMemberUpdate (    @Field("qrcode") String qrcode,
-                                                    @Field("eventId") String eventId,
-                                                    @Field("sessionId ") String sessionId );
+    Call<ResponseBody> verifyEventMemberUpdate (@Body VerifyJoinEvent verifyJoinEvent);
 
 // payment
     @FormUrlEncoded
@@ -217,4 +219,18 @@ public interface BaseApiService {
                                  @Field("receiver") String receiver,
                                  @Field("fullName") String fullName,
                                  @Field("content") String content);
+//    get list earn money
+    @GET("user/report_revenus")
+    Call<com.example.myapplication.model.EarnedMoney.Example> getReportRevenus (
+            @Query("startDate") Date startDate,
+            @Query("endDate") Date endDate,
+            @Query("eventId") String eventId);
+    @GET("user/report_revenus")
+    Call<com.example.myapplication.model.EarnedMoney.Example> getListRevenus (@Query("startDate") Date startDate,
+                                                                              @Query("endDate") Date endDate);
+    @GET("user/list_payment_session")
+    Call<com.example.myapplication.model.ListPaymentSession.Example> getListPaymentSession
+            (@Query("eventId") String eventId,
+             @Query("sessionId") String sessionId,
+             @Query("pageNumber") Integer pageNumber);
 }

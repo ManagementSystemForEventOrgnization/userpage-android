@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/black"
+    tools:context=".activity.DetailEarnMoney">
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:id="@+id/img_payment_detail"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop"
+            android:src="@mipmap/payment"/>
+        <View
+            android:id="@+id/div_payment"
+            android:layout_width="250dp"
+            android:layout_height="1dp"
+            android:layout_centerInParent="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="30dp"
+            android:background="@color/white"/>
+
+        <TextView
+            android:id="@+id/txt_expenditureTotal_detail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_alignTop="@+id/img_payment_detail"
+            android:text="Total"
+            android:layout_marginTop="20dp"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/txt_amountRevenue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/txt_expenditureTotal_detail"
+            android:text=""
+            android:textColor="@color/green"
+            android:textSize="25sp"
+            android:textStyle="bold" />
+        <EditText
+            android:id="@+id/startDateDetail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawableRight="@mipmap/icons_calendar"
+            android:layout_above="@+id/endDateDetail"
+            android:layout_marginRight="20dp"
+            android:textColor="@color/white"
+            android:hint="Start Date"
+            android:textColorHint="@color/white"
+            android:layout_marginLeft="20dp"/>
+        <EditText
+            android:id="@+id/endDateDetail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:layout_alignBottom="@id/img_payment_detail"
+            android:drawableRight="@mipmap/icons_calendar"
+            android:hint="End Date"
+            android:textColor="@color/white"
+            android:textColorHint="@color/white"
+            android:layout_marginRight="20dp"
+            android:layout_marginLeft="20dp"/>
+
+    </RelativeLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvSessionMoney"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+
+</LinearLayout>

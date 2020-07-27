@@ -17,7 +17,7 @@
     <ImageView
         android:id="@+id/img_payment"
         android:layout_width="match_parent"
-        android:layout_height="220dp"
+        android:layout_height="120dp"
         android:adjustViewBounds="true"
         android:scaleType="centerCrop"
         android:src="@mipmap/payment"/>
@@ -25,49 +25,29 @@
             android:id="@+id/div_payment"
             android:layout_width="250dp"
             android:layout_height="1dp"
+            android:layout_alignBottom="@id/img_payment"
             android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
+            android:layout_marginBottom="30dp"
             android:background="@color/white"/>
 
-        <TextView
-            android:id="@+id/txt_revenueTotal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_alignTop="@+id/img_payment"
-            android:text="Revenue Total"
-            android:layout_marginTop="40dp"
-            android:textColor="@color/white"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/txt_amountRevenue"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_below="@+id/txt_revenueTotal"
-            android:text=""
-            android:textColor="@color/green"
-            android:textSize="25sp"
-            android:textStyle="bold" />
         <TextView
             android:id="@+id/txt_expenditureTotal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/txt_revenueTotal"
-            android:layout_marginTop="55dp"
             android:layout_centerHorizontal="true"
+            android:layout_alignTop="@+id/img_payment"
             android:text="Expenditure Total"
+            android:layout_marginTop="20dp"
             android:textColor="@color/white"
             android:textSize="20sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold" />
+
         <TextView
             android:id="@+id/txt_amountExpenditure"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/txt_expenditureTotal"
             android:layout_centerHorizontal="true"
+            android:layout_below="@+id/txt_expenditureTotal"
             android:text=""
             android:textColor="@color/red"
             android:textSize="25sp"

@@ -43,6 +43,8 @@ import androidx.viewpager.widget.ViewPager;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -84,6 +86,11 @@ public class HomeActivity extends AppCompatActivity {
         mContext = this;
         mApiService = UtilsApi.getAPIService(mContext);
         sharedPrefManager = new SharedPrefManager(this);
+
+        if (sharedPrefManager.getSPLogin()==false){
+            startActivity(new Intent(mContext, Login.class));
+            finish();
+        }
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
@@ -166,6 +173,9 @@ public class HomeActivity extends AppCompatActivity {
                             case R.id.nav_item_paymentHistory:
                                 startActivity(new Intent(mContext, Payment.class));
                                 break;
+                            case R.id.nav_item_earnMoney:
+                                startActivity(new Intent(mContext, EarnedMoney.class));
+                                break;
                             case R.id.nav_item_changePassword:
                                 startActivity(new Intent(mContext, ChangePassword.class));
                                 break;
@@ -216,9 +226,7 @@ public class HomeActivity extends AppCompatActivity {
             case R.id.action_notification:
                 startActivity(new Intent(mContext, Notification.class));
                 break;
-            case R.id.action_scanQR:
-                startActivity(new Intent(mContext, ScanQRCode.class));
-                break;
+
         }
         return super.onOptionsItemSelected(item);
     }
@@ -239,6 +247,27 @@ public class HomeActivity extends AppCompatActivity {
                         if (textCartItemCount.getVisibility() != View.VISIBLE) {
                             textCartItemCount.setVisibility(View.VISIBLE);
                         }
+                    }
+                }
+                else {
+                    if (response.code()==600){
+                        JSONObject jsonError = null;
+                        try {
+                            jsonError = new JSONObject(response.errorBody().string());
+                            Log.e("debug", "onFailure: ERROR 600 > " + jsonError.getJSONObject("error").getString("message") );
+                            Toast.makeText(mContext, jsonError.getJSONObject("error").getString("message"), Toast.LENGTH_LONG).show();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    else
+                    {
+                        signOutGoogle();
+                        sharedPrefManager.logout();
+                        sharedPrefManager.removeCookies();
+                        startActivity(new Intent(mContext, Login.class));
                     }
                 }
             }
@@ -264,7 +293,7 @@ public class HomeActivity extends AppCompatActivity {
                     sharedPrefManager.logout();
                     sharedPrefManager.removeCookies();
                     Toast.makeText(mContext, "Logout successfully!", Toast.LENGTH_LONG).show();
-                    startActivity(new Intent(mContext, MainActivity.class));
+                    startActivity(new Intent(mContext, Login.class));
                 }
                 else
                 {

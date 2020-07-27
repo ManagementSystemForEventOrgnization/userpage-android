@@ -10,15 +10,21 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.myapplication.R;
 import com.example.myapplication.model.DetailPayment.Example;
 import com.example.myapplication.model.DetailPayment.Result;
 import com.example.myapplication.util.Constants;
+import com.example.myapplication.util.SharedPrefManager;
 import com.example.myapplication.util.api.BaseApiService;
 import com.example.myapplication.util.api.UtilsApi;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.util.Objects;
@@ -35,6 +41,8 @@ public class DetailPayment extends AppCompatActivity {
     String idPayment, idUser, sessionName, eventName, receiverName, senderName;
     Date sessionDay, createAt, updateAt;
     BaseApiService mApiService;
+    SharedPrefManager sharedPrefManager;
+
     @BindView(R.id.timePaymentDetail) TextView timePaymentDetail;
     @BindView(R.id.contentPaymentDetail) TextView contentPaymentDetail;
     @BindView(R.id.txt_amountPaymentDetail) TextView txt_amountPaymentDetail;
@@ -63,6 +71,7 @@ public class DetailPayment extends AppCompatActivity {
         ButterKnife.bind(this);
         mContext = this;
         mApiService = UtilsApi.getAPIService(mContext);
+        sharedPrefManager = new SharedPrefManager(this);
 
         toolbar_title.setText("Detail payment");
         toolbar_back.setOnClickListener(new View.OnClickListener() {
@@ -74,7 +83,9 @@ public class DetailPayment extends AppCompatActivity {
 
         Intent myIntent = getIntent();
         idPayment = myIntent.getStringExtra(Constants.KEY_PAYMENTID);
-        idUser = myIntent.getStringExtra(Constants.KEY_USERID);
+//        idUser = myIntent.getStringExtra(Constants.KEY_USERID);
+        idUser = sharedPrefManager.getSpIduser();
+
         getDetailPayment();
     }
     @Override
@@ -87,7 +98,7 @@ public class DetailPayment extends AppCompatActivity {
         mApiService.get_payment_info(idPayment).enqueue(new Callback<Example>() {
             @Override
             public void onResponse(Call<Example> call, Response<Example> response) {
-                if (response.code()==200)
+                if (response.isSuccessful())
                 {
                     Result detailPayment = response.body().getResult();
                     txt_amountPaymentDetail.setText(detailPayment.getAmount().toString()+ " VND");
@@ -145,7 +156,15 @@ public class DetailPayment extends AppCompatActivity {
                 }
                 else
                 {
-                    Log.e("error phi:","is not 200");
+                    if (response.code()==600) {
+                        JSONObject jsonError = null;
+                        try {
+                            jsonError = new JSONObject(response.errorBody().string());
+                            Toast.makeText(mContext, jsonError.getJSONObject("error").getString("message"), Toast.LENGTH_LONG).show();
+                        } catch (JSONException | IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
             }
 

@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -21,12 +22,14 @@ import com.example.myapplication.R;
 import com.example.myapplication.adapter.FileAdapter;
 import com.example.myapplication.adapter.SessionEvent;
 import com.example.myapplication.adapter.TimeAdapter;
+import com.example.myapplication.model.ApplyEvent;
 import com.example.myapplication.model.DetailEvent.Event;
 import com.example.myapplication.model.DetailEvent.Example;
 import com.example.myapplication.model.ListEvent.Detail;
 import com.example.myapplication.model.ListEvent.Document;
 import com.example.myapplication.model.ListEvent.Session;
 import com.example.myapplication.util.Constants;
+import com.example.myapplication.util.SharedPrefManager;
 import com.example.myapplication.util.api.BaseApiService;
 import com.example.myapplication.util.api.UtilsApi;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -41,6 +44,7 @@ import com.squareup.picasso.Picasso;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -73,7 +77,6 @@ public class DetailEvent extends AppCompatActivity implements OnMapReadyCallback
     @BindView(R.id.btn_returnListUser) TextView btn_returnListUser;
 
     @BindView(R.id.btn_back) TextView btn_back;
-    @BindView(R.id.btn_scanQr) TextView btn_scanQr;
     @BindView(R.id.txt_priceDetail) TextView txt_priceDetail;
     @BindView(R.id.txt_categoryDetail) TextView txt_categoryDetail;
     @BindView(R.id.itemApplyUserDetail) LinearLayout itemApplyUserDetail;
@@ -87,10 +90,12 @@ public class DetailEvent extends AppCompatActivity implements OnMapReadyCallback
 //    item in recyclerview
     SupportMapFragment mapFrag;
     private GoogleMap mMap;
-    Session sessionItem;
+    Session sessionItem1;
     int joinNumber = 0;
     Event event;
-    String eventId, typeTab,statusSession;
+    String eventId,statusSession;
+//    typetab
+    String myUserId;
     Boolean isCancelSession = false;
     Boolean isReject = false;
     Date date = new Date();
@@ -98,11 +103,10 @@ public class DetailEvent extends AppCompatActivity implements OnMapReadyCallback
     Double Lat = -34.0;
     Double Lng= 154.0;
 
-//    private MarkerOptions options = new MarkerOptions();
-
 
     Context mContext;
     BaseApiService mApiService;
+    SharedPrefManager sharedPrefManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,12 +121,15 @@ public class DetailEvent extends AppCompatActivity implements OnMapReadyCallback
         ButterKnife.bind(this);
         mContext = this;
         mApiService = UtilsApi.getAPIService(mContext);
+        sharedPrefManager = new SharedPrefManager(this);
+
+        myUserId = sharedPrefManager.getSpIduser();
 
 
 //        get Intent from tabs
         Intent intent = getIntent();
         eventId = intent.getStringExtra(Constants.KEY_ID);
-        typeTab = intent.getStringExtra(Constants.KEY_STATUS);
+//        typeTab = intent.getStringExtra(Constants.KEY_STATUS);
 //        adapter
         rvListDate.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         rvListDate.setItemAnimator(new DefaultItemAnimator());
@@ -142,10 +149,6 @@ public class DetailEvent extends AppCompatActivity implements OnMapReadyCallback
         });
         getDetailEvent();
 
-//        Lat = 10.7624229;
-//        Lng = 106.6790081;
-//        Lat = event.getSession().get(positionMap).getAddress().getMap().getLat();
-//        Lng = event.getSession().get(positionMap).getAddress().getMap().getLng();
     }
     @Override
     public void onBackPressed() {
@@ -174,13 +177,15 @@ public class DetailEvent extends AppCompatActivity implements OnMapReadyCallback
 //                    adapter session event
                     final List<Session> dateItems = event.getSession();
 //                    rvListDate.setAdapter(new SessionEvent(mContext, dateItems));
-                    getDetailSession(dateItems.get(0));
+                    if (dateItems.size()>=0){
+                        getDetailSession(dateItems.get(0));
+                    }
                     rvListDate.setAdapter(new SessionEvent(mContext, dateItems, new SessionEvent.MyAdapterListener() {
                         @Override
                         public void itemListSessionDateOnClick(View v, int position) {
-                            sessionItem = dateItems.get(position);
+                            sessionItem1 = dateItems.get(position);
                             positionMap = position;
-                            getDetailSession(sessionItem);
+                            getDetailSession(sessionItem1);
                             Log.e("positionMap", Integer.toString(positionMap));
                         }
                     }));
@@ -191,7 +196,11 @@ public class DetailEvent extends AppCompatActivity implements OnMapReadyCallback
                         txt_priceDetail.setText("FREE");
                     }
                     txt_categoryDetail.setText(event.getEventCategory().getName());
-                    if (!typeTab.equals("SELF")){
+
+//                    edit 24/07:
+//                     if (!typeTab.equals("SELF")){
+
+                    if (!event.getUserId().equals(myUserId)){
                         itemApplyUserDetail.setVisibility(View.VISIBLE);
                         txt_fullname_userApply_detail.setText(event.getUser().getFullName());
                         if(event.getUser().getAvatar()!=null && !event.getUser().getAvatar().equals(""))
@@ -226,13 +235,13 @@ public class DetailEvent extends AppCompatActivity implements OnMapReadyCallback
     }
     private void getDetailSession(Session sessionItem){
 //                            each session
-            if (sessionItem.getJoinNumber()==null){
-                txt_joinNumber.setVisibility(View.GONE);
-            }
-            else{
-                joinNumber = sessionItem.getJoinNumber();
-                txt_joinNumber.setText(sessionItem.getJoinNumber().toString() + " people particated");
-            }
+        if (sessionItem.getJoinNumber()==null){
+            txt_joinNumber.setVisibility(View.GONE);
+        }
+        else {
+            joinNumber = sessionItem.getJoinNumber();
+            txt_joinNumber.setText(joinNumber + " people particated");
+        }
             if(sessionItem.getAddress()!=null){
                 if (sessionItem.getAddress().getLocation()!=null)
                 {
@@ -253,16 +262,6 @@ public class DetailEvent extends AppCompatActivity implements OnMapReadyCallback
                 txt_address.setVisibility(View.GONE);
                 roomMap.setVisibility(View.GONE);
             }
-//        Double lat1 = sessionItem.getAddress().getMap().getLat();
-//        Log.e("debug detail",lat1.toString());
-//
-//        Double lng1 = sessionItem.getAddress().getMap().getLng();
-//        Log.e ("debug lng detail", lng1.toString());
-
-//        options.position(new LatLng(10.7624176, 106.6811968));
-//        options.title("My event here");
-//        options.snippet("someDesc");
-//        googleMap.addMarker(options);
 
             List<Detail> detailItems = sessionItem.getDetail();
             if (detailItems.size()>0)
@@ -306,10 +305,45 @@ public class DetailEvent extends AppCompatActivity implements OnMapReadyCallback
                 @Override
                 public void onClick(View v)
                 {
-                    Intent choosePaymentScreen = new Intent(mContext, ChoosePayment.class);
-                    choosePaymentScreen.putExtra(Constants.KEY_EVENTID, event.getId());
-                    choosePaymentScreen.putExtra(Constants.KEY_SESSIONID, sessionId);
-                    startActivity(choosePaymentScreen);
+                    if (event.getIsSellTicket()){
+                        Intent choosePaymentScreen = new Intent(mContext, ChoosePayment.class);
+                        choosePaymentScreen.putExtra(Constants.KEY_EVENTID, event.getId());
+                        choosePaymentScreen.putExtra(Constants.KEY_SESSIONID, sessionId);
+                        startActivity(choosePaymentScreen);
+                    }
+                    else {
+                        List<String> arrSessionIds = new ArrayList<>();
+                        arrSessionIds.add(sessionId);
+                        ApplyEvent applyEvent = new ApplyEvent("", eventId, arrSessionIds);
+
+                        mApiService.joinEvent(applyEvent).enqueue(new Callback<ResponseBody>() {
+                            @Override
+                            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                                if(response.isSuccessful()){
+                                    joinNumber +=1;
+                                    txt_joinNumber.setText(joinNumber + " people particated");
+                                    txt_joinNumber.invalidate();
+                                    btn_applyEvent.setVisibility(View.GONE);
+                                    btn_cancelEvent.setVisibility(View.VISIBLE);
+                                    Toast.makeText(mContext, "Joined event successfully", Toast.LENGTH_LONG).show();
+                                }
+                                else {
+                                    try {
+                                        JSONObject jsonError = new JSONObject(response.errorBody().string());
+                                        Toast.makeText(mContext, jsonError.getJSONObject("error").getString("message"), Toast.LENGTH_LONG).show();
+                                    } catch (Exception e) {
+                                        Toast.makeText(mContext, e.getMessage(), Toast.LENGTH_LONG).show();
+                                    }
+                                }
+                            }
+                            @Override
+                            public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+                            }
+                        });
+
+                    }
+
                 }
             });
 
@@ -322,6 +356,11 @@ public class DetailEvent extends AppCompatActivity implements OnMapReadyCallback
                         public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                             if(response.isSuccessful())
                             {
+                                joinNumber -=1;
+                                txt_joinNumber.setText(joinNumber + " people particated");
+                                txt_joinNumber.invalidate();
+                                btn_cancelEvent.setVisibility(View.GONE);
+                                btn_applyEvent.setVisibility(View.VISIBLE);
                                 Toast.makeText(mContext,"Canceled", Toast.LENGTH_LONG).show();
                                 getIntent();
                             }
@@ -354,8 +393,21 @@ public class DetailEvent extends AppCompatActivity implements OnMapReadyCallback
             isReject = sessionItem.getIsReject();
         }
 
-        if ( typeTab.equals("RECENT") || (typeTab.equals("ALL") &&
-                Integer.parseInt(sessionDate)>=Integer.parseInt(currentDate)))
+//        edit bo typetab :
+//        if ( typeTab.equals("RECENT") || (typeTab.equals("ALL") &&
+//                Integer.parseInt(sessionDate)>=Integer.parseInt(currentDate)))
+//            {
+
+//        count time before start session
+        long sessionTime, diff, diffHours;
+        long currentTime = date.getTime();
+        sessionTime = sessionItem.getDay().getTime();
+        diff = sessionTime - currentTime;
+        diffHours = diff/(60 * 60 * 1000);
+//        diffHours = diff/(60 * 60 * 1000) % 24;
+
+        if ( !event.getUserId().equals(myUserId)  &&
+                Integer.parseInt(sessionDate)>=Integer.parseInt(currentDate))
             {
 //                delete & reject event
                 if( isCancelSession || isReject || !statusEvent.equals("PUBLIC") || joinNumber>=sessionItem.getLimitNumber())
@@ -363,21 +415,23 @@ public class DetailEvent extends AppCompatActivity implements OnMapReadyCallback
                     btn_cancelEvent.setVisibility(View.GONE);
                     btn_applyEvent.setVisibility(View.GONE);
                 }
-                else if(statusSession.equals("JOINED")){
+                else if(statusSession.equals("JOINED") ){
+
                     btn_cancelEvent.setVisibility(View.VISIBLE);
                     btn_applyEvent.setVisibility(View.GONE);
 //                    check time before start event session
-                    btn_scanQrcode.setVisibility(View.VISIBLE);
-                    btn_scanQrcode.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Intent intent = new Intent(mContext, ScanQRCode.class);
-                            intent.putExtra(Constants.KEY_EVENTID, eventId);
-                            intent.putExtra(Constants.KEY_SESSIONID, sessionItem.getIdSession());
-                            startActivity(intent);
-                        }
-                    });
-
+                    if (diffHours <=4){
+                        btn_scanQrcode.setVisibility(View.VISIBLE);
+                        btn_scanQrcode.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent = new Intent(mContext, ScanQRCode.class);
+                                intent.putExtra(Constants.KEY_EVENTID, event.getId());
+                                intent.putExtra(Constants.KEY_SESSIONID, sessionItem.getIdSession());
+                                startActivity(intent);
+                            }
+                        });
+                    }
                 }
                 else {
                     btn_applyEvent.setVisibility(View.VISIBLE);
@@ -385,7 +439,10 @@ public class DetailEvent extends AppCompatActivity implements OnMapReadyCallback
                 }
             }
 
-        if(typeTab.equals("SELF"))
+//        edit typetab
+//        if(typeTab.equals("SELF"))
+
+        if(event.getUserId().equals(myUserId))
         {
             btn_getQrcode.setVisibility(View.VISIBLE);
             btn_getQrcode.setOnClickListener(new View.OnClickListener() {
@@ -400,15 +457,17 @@ public class DetailEvent extends AppCompatActivity implements OnMapReadyCallback
                 }
             });
         }
-        if(typeTab.equals("SELF") && joinNumber>0)
+        if( joinNumber>0)
         {
             btn_returnListUser.setVisibility(View.VISIBLE);
             btn_returnListUser.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(mContext, ListApplyUser.class);
-                    intent.putExtra(Constants.KEY_EVENTNAME, event.getName());
+                    intent.putExtra(Constants.KEY_SESSIONID, sessionItem.getIdSession());
                     intent.putExtra(Constants.KEY_EVENTID, eventId);
+                    intent.putExtra(Constants.KEY_ORGANIZERID, event.getUserId());
+//                    intent.putExtra(Constants.KEY_STATUS,typeTab);
                     startActivity(intent);
                 }
             });
@@ -416,7 +475,6 @@ public class DetailEvent extends AppCompatActivity implements OnMapReadyCallback
 
 
     }
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
 

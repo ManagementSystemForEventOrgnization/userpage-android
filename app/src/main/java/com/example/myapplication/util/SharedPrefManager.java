@@ -39,6 +39,7 @@ public class SharedPrefManager{
     public static final String SP_OBJUSER = "spObjUser";
     public static final String SP_IDUSER = "spIdUser";
     public static final String SP_COOKIES = "spCookies";
+    public static final String SP_TOKEN = "spToken";
 
     SharedPreferences sp;
     SharedPreferences.Editor spEditor;
@@ -80,6 +81,7 @@ public class SharedPrefManager{
     public String getSpIduser(){
         return sp.getString(SP_IDUSER, "");
     }
+    public String getSpToken() { return sp.getString(SP_TOKEN, "");}
 
     public void logout(){
         spEditor.clear();

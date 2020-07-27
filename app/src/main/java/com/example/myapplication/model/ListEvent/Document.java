@@ -13,6 +13,9 @@ public class Document {
     @SerializedName("url")
     @Expose
     private String url;
+    @SerializedName("upload")
+    @Expose
+    private Boolean upload;
 
     public String getId() {
         return id;
@@ -36,5 +39,12 @@ public class Document {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+    public Boolean getUpload() {
+        return upload;
+    }
+
+    public void setUrl(Boolean url) {
+        this.upload = upload;
     }
 }

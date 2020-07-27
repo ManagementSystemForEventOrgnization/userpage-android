@@ -21,7 +21,10 @@ import com.squareup.picasso.Picasso;
 
 import org.ocpsoft.prettytime.PrettyTime;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.BindInt;
 import butterknife.BindView;
@@ -32,9 +35,16 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private final int VIEW_TYPE_LOADING = 1;
     Context mContext;
     List<Result> notificationItemList;
-    public NotificationAdapter(Context context, List<Result> notificationList) {
+//    types of format date & time
+    PrettyTime p = new PrettyTime(Locale.ENGLISH);
+    Date date = new Date();
+    SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+
+    public MyAdapterListener onClickListener;
+    public NotificationAdapter(Context context, List<Result> notificationList, MyAdapterListener listener) {
         this.mContext = context;
         notificationItemList = notificationList;
+        onClickListener = listener;
     }
 
     @NonNull
@@ -85,6 +95,14 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             ButterKnife.bind(this, itemView);
             viewBackground = itemView.findViewById(R.id.view_background);
             viewForeground = itemView.findViewById(R.id.view_foreground);
+
+            view_item_notification.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    viewForeground.setBackgroundColor(Color.parseColor("#111111"));
+                    onClickListener.onclickItemNotification(v, getAdapterPosition());
+                }
+            });
         }
     }
     public class LoadingViewHolder extends RecyclerView.ViewHolder {
@@ -104,7 +122,6 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
     private void populateItemRows(NotificationHolder holder, int position) {
         final Result notificationItem = notificationItemList.get(position);
-        PrettyTime p = new PrettyTime();
 
         String fullname,title, notiContent, type_noti,time;
         String url_icon_noti;
@@ -126,7 +143,13 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
 
         type_noti = notificationItem.getType();
-        time = p.format(notificationItem.getCreatedAt());
+//        time = p.format(notificationItem.getCreatedAt());
+//        so sanh thoi gian giua ngay thong bao va ngay hien tai
+        long notificationTime, diff, diffHours;
+        long currentTime = date.getTime();
+        notificationTime = notificationItem.getCreatedAt().getTime();
+        diff = currentTime - notificationTime;
+        diffHours = diff/(60 * 60 * 1000);
         //        get suitable icon for each notification
         switch (type_noti){
             case "CREDIT_REFUND_SUCCESS":
@@ -158,8 +181,18 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
         Picasso.get().load(url_icon_noti).into(holder.img_notification);
         holder.txt_notification.setText(notiContent);
-        holder.txt_time.setText(time);
+        if (diffHours < 24)
+        {
+            holder.txt_time.setText(p.format(notificationItem.getCreatedAt()));
+        }
+        else
+        {
+            holder.txt_time.setText(dateFormat.format(notificationItem.getCreatedAt()));
+        }
 
+    }
+    public interface MyAdapterListener {
+        void onclickItemNotification(View v, int position);
     }
 
 }

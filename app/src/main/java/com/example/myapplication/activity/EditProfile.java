@@ -132,13 +132,16 @@ public class EditProfile extends AppCompatActivity {
 
                     Toast.makeText(mContext, "Edit successfully", Toast.LENGTH_LONG).show();
                 }
-                try {
-                    assert response.errorBody() != null;
-                    JSONObject jsonError = new JSONObject(response.errorBody().string());
-                    Log.e("debug", "onFailure: ERROR 600 > " + jsonError.getJSONObject("error").getString("message") );
-                    Toast.makeText(mContext, jsonError.getJSONObject("error").getString("message"), Toast.LENGTH_LONG).show();
-                } catch (Exception e) {
-                    Toast.makeText(mContext, e.getMessage(), Toast.LENGTH_LONG).show();
+                else{
+                    if (response.code()==600) {
+                        JSONObject jsonError = null;
+                        try {
+                            jsonError = new JSONObject(response.errorBody().string());
+                            Toast.makeText(mContext, jsonError.getJSONObject("error").getString("message"), Toast.LENGTH_LONG).show();
+                        } catch (JSONException | IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
             }
 
